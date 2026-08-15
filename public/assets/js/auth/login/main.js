@@ -1,4 +1,5 @@
 import { initPassword } from "./password.js";
+import { validateInput } from "./validate.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   initPassword();
@@ -10,26 +11,34 @@ window.addEventListener("DOMContentLoaded", () => {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
-    let valid = true;
 
-    if (!document.getElementById("username").value.trim()) {
+    const username = document.getElementById("username").value;
+    const password = document.getElementById("password").value;
+
+    console.log(username, password);
+
+    const validate = validateInput({
+      username,
+      password,
+    });
+
+    if (!validate.valid && validate.input === "both") {
       userField.classList.add("has-error");
-      valid = false;
-    } else {
-      userField.classList.remove("has-error");
-    }
-
-    if (!passInput.value.trim()) {
       passField.classList.add("has-error");
-      valid = false;
-    } else {
-      passField.classList.remove("has-error");
+      return;
     }
 
-    if (valid) {
-      // Placeholder: hook up real authentication here
-      console.log("Form valid — ready to authenticate.");
+    if (!validate.valid && validate.input === "username") {
+      userField.classList.add("has-error");
+      return;
     }
+
+    if (!validate.valid && validate.input === "password") {
+      passField.classList.add("has-error");
+      return;
+    }
+
+    console.log("valid");
   });
 
   document
