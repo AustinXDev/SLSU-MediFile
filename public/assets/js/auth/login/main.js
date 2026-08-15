@@ -1,5 +1,6 @@
 import { initPassword } from "./password.js";
 import { validateInput } from "./validate.js";
+import api from "../../../../api/api.js";
 
 window.addEventListener("DOMContentLoaded", () => {
   initPassword();
@@ -9,13 +10,24 @@ window.addEventListener("DOMContentLoaded", () => {
   const passField = document.getElementById("passField");
   const passInput = document.getElementById("password");
 
-  form.addEventListener("submit", (e) => {
+  form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const username = document.getElementById("username").value;
-    const password = document.getElementById("password").value;
+    const username = document.getElementById("username").value.trim();
+    const password = document.getElementById("password").value.trim();
 
-    console.log(username, password);
+    try {
+      const response = await api.post("auth/login_process.php", {
+        username: document.getElementById("username").value.trim(),
+        password: document.getElementById("password").value,
+      });
+
+      console.log("SUCCESS:", response.data);
+    } catch (error) {
+      const response = error.response?.data;
+
+      console.log("RESPONSE:", response.message);
+    }
 
     const validate = validateInput({
       username,

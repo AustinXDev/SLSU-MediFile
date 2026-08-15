@@ -1,7 +1,5 @@
 <?php
 
-require_once __DIR__ . '/../init.php';
-
 /**
  * Database Configuration
  * 
@@ -15,7 +13,7 @@ $user     = trim($_ENV['DB_USER']) ?? '';
 $pass     = trim($_ENV['DB_PASS']) ?? '';
 $charset  = 'utf8mb4';
 
-$dsn = "mysql:host={$host},port={$port},dbname={$db},charset={$charset}";
+$dsn = "mysql:host={$host};port={$port};dbname={$db};charset={$charset}";
 
 //Security
 $options = [
@@ -27,13 +25,14 @@ $options = [
 try{
 
   $pdo = new PDO($dsn, $user, $pass, $options);
-  echo 'Database connection successful';
 
 } catch (\PDOException $e) {
 
-  //Log the eeror message privately;
-  error_log($e->getMessage());
-  exit("A database error occured. Please try again.");
+  throw new RuntimeException(
+        'Database connection failed: ' . $e->getMessage(),
+        0,
+        $e
+    );
 
 }
 

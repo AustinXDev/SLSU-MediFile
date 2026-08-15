@@ -1,3 +1,7 @@
+<?php 
+require_once __DIR__ . '/../../config/init.php';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,10 +168,18 @@
 
 </div>
 
-<script>
-  window.BASE_URL = <?= json_encode(BASE_URL) ?>;
-</script>
-<script src="<?= BASE_URL ?>assets/js/auth/login/main.js"  type="module"></script>
+<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
+<script>
+    window.APP_ENV = {
+        BASE_URL: <?= json_encode(BASE_URL) ?>,
+        API_URL: <?= json_encode($_ENV['APP_API'] ?? '') ?>
+    };
+</script>
+
+<script
+    type="module"
+    src="<?= BASE_URL ?>assets/js/auth/login/main.js">
+</script>
 </body>
 </html>
