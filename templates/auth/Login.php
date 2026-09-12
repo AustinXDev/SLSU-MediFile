@@ -148,7 +148,7 @@ require_once __DIR__ . '/../../config/init.php';
           <a href="#" class="forgot-link">Forgot Password?</a>
         </div>
 
-        <button type="submit" class="btn-primary">
+        <button type="submit" class="btn-primary" id="login-btn">
           Sign In
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 5l7 7-7 7"/></svg>
         </button>
@@ -181,5 +181,6 @@ require_once __DIR__ . '/../../config/init.php';
     type="module"
     src="<?= BASE_URL ?>assets/js/auth/login/main.js">
 </script>
+<script src="<?= BASE_URL ?>assets/components/modal.js"></script>
 </body>
 </html>

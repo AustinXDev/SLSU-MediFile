@@ -13,8 +13,17 @@ switch($request) {
   case '':
     header("Location: " . BASE_URL . "Login");
     exit();
+    
   case 'login':
     require_once __DIR__ . '/../templates/auth/Login.php';
+    break;
+
+  case 'dashboard':
+    require_once __DIR__ . '/../templates/Dashboard.php';
+    break;
+
+  case 'patients':
+    require_once __DIR__ . '/../templates/Patients.php';
     break;
 
   default:

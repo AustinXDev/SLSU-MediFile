@@ -15,13 +15,27 @@ class LoginController
 
   public function login(
     string $username,
-    string $password
+    string $password,
+    string $ip
   ): array {
 
     return $this->loginService->Login(
       $username,
-      $password
+      $password,
+      $ip
     );
+  }
+
+  public function verify(
+    string $code,
+    string $ip
+  ): array {
+
+    return $this->loginService->verify(
+      $code,
+      $ip
+    );
+
   }
 
 }
