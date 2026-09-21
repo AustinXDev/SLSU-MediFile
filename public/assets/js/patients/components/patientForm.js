@@ -1,11 +1,55 @@
 import { state } from "./state.js";
 import { dom, selected } from "../utils/dom.js";
 import { patientData } from "./patientData.js";
-import { patientValidation } from "./patientValidation.js";
+import {
+  patientValidation,
+  dentalRecordValidation,
+} from "./patientValidation.js";
 import { patientModal } from "./patientModal.js";
 import { patientTable } from "./patientTable.js";
 
 export const patientForm = {
+  showPage(page) {
+    const page1 = dom.get("formPage1");
+    const page2 = dom.get("formPage2");
+
+    if (!page1 || !page2) return;
+
+    const isPage1 = page === 1;
+
+    page1.style.display = isPage1 ? "" : "none";
+    page2.style.display = isPage1 ? "none" : "";
+  },
+
+  nextPage() {
+    if (!this.validatePage1()) {
+      return;
+    }
+
+    this.showPage(2);
+    console.log("Next Page");
+  },
+
+  previousPage() {
+    this.showPage(1);
+  },
+
+  validatePage1() {
+    const page1 = dom.get("formPage1");
+
+    if (!page1) return false;
+
+    const requiredFields = page1.querySelectorAll("[required]");
+
+    let valid = true;
+
+    if (!patientValidation.formIsValid()) {
+      valid = false;
+    }
+
+    return valid;
+  },
+
   buildRecord() {
     const existing = state.editingId ? patientData.find(state.editingId) : null;
 
@@ -59,6 +103,10 @@ export const patientForm = {
           sportsDefinition: dom.value("sportsDefinition"),
         },
       },
+      dental_record: {
+        id: dom.value("dentalId") || null,
+        teethData: selected.arrayValue(".dental-field"),
+      },
     };
   },
 
@@ -66,7 +114,10 @@ export const patientForm = {
     event.preventDefault();
 
     if (state.viewOnly) return;
-    if (!patientValidation.formIsValid()) return;
+
+    //if (!patientValidation.formIsValid()) return;
+
+    if (!dentalRecordValidation.formIsValid()) return;
 
     const record = this.buildRecord();
     const isEditing = Boolean(state.editingId);
@@ -78,9 +129,23 @@ export const patientForm = {
         : "Are you sure you want to add this new patient record?",
       async () => {
         try {
-          await patientData.save(record);
+          const response = await patientData.save(record);
 
+          if (response.status === "error") {
+            StatusModal.show(
+              isEditing ? "Failed to Update" : "Failed to Save",
+              `
+                ${patientData.fullName(record)}'s patient record was failed ${isEditing ? "update" : "save"}
+              `,
+            );
+
+            return;
+          }
+
+          this.showPage(1);
           patientModal.close();
+
+          await patientData.load();
           patientTable.render();
 
           StatusModal.show(

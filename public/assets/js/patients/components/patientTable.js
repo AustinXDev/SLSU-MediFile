@@ -16,7 +16,6 @@ export const patientTable = {
   },
 
   row(patient) {
-    console.log(patient);
     const name = patientData.fullName(patient);
     const escapedName = html.escape(name);
     const statusClass = patient.status === 1 ? "completed" : "inactive";
@@ -91,7 +90,7 @@ export const patientTable = {
   },
 
   async render() {
-    await patientData.load();
+    //await patientData.load();
 
     const results = patientSearch.filterPatients();
 

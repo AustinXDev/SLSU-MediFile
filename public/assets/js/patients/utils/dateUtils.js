@@ -22,8 +22,6 @@ export const dateUtils = {
   dateFormatter(date) {
     const refractorDate = new Date(date.replace(" ", "T"));
 
-    console.log(refractorDate);
-
     const formattedDate = new Intl.DateTimeFormat("en-US", {
       month: "short",
       day: "numeric",

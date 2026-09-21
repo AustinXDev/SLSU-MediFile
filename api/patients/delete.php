@@ -1,6 +1,5 @@
 <?php
 
-
 require_once __DIR__ . '/../../config/init.php';
 
 use App\Repositories\PatientRepositories\PatientReposity;
@@ -15,14 +14,11 @@ header(
 
 try {
 
-    if ($_SERVER['REQUEST_METHOD'] !== 'GET') {
-        http_response_code(405);
-        echo json_encode([
-            'status' => 'error',
-            'message' => 'Method Not Allowed. Use GET for this endpoint.'
-        ]);
-        exit;
-    }
+
+    $data = json_decode(
+        file_get_contents("php://input"),
+        true
+    );
 
     require_once __DIR__ . '/../../App/database/database.php';
 
@@ -36,13 +32,9 @@ try {
 
     $controller = new PatientController($service);
 
-    $result = $controller->getAll();
+    $result = $controller->delete($data);
 
-    http_response_code(200);
-    echo json_encode([
-        'status' => 'success',
-        'data' => $result
-    ]);
+    echo json_encode($result);
 
 } catch (\Throwable $e) {
 
@@ -52,5 +44,4 @@ try {
       'status' => 'error',
       'message' => $e->getMessage()
     ]);
-
 }

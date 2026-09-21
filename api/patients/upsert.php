@@ -4,6 +4,7 @@ require_once __DIR__ . '/../../config/init.php';
 
 use App\Repositories\PatientRepositories\PatientReposity;
 use App\Repositories\PatientRepositories\PhysicalExaminationRepository;
+use App\Repositories\PatientRepositories\DentalRecordRepository;
 use App\Services\PatientServices\PatientService;
 use App\Controllers\PatientControllers\PatientController;
 
@@ -25,7 +26,9 @@ try {
 
     $physicalExamRepo = new PhysicalExaminationRepository($pdo);
 
-    $service = new PatientService($pdo, $patientRepo, $physicalExamRepo);
+    $dentalRepo = new DentalRecordRepository($pdo);
+
+    $service = new PatientService($pdo, $patientRepo, $physicalExamRepo, $dentalRepo);
 
     $controller = new PatientController($service);
 

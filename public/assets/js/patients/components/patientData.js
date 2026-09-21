@@ -42,20 +42,18 @@ export const patientData = {
   },
 
   async save(record) {
-    if (state.editingId) {
-      state.patients = state.patients.map((patient) =>
-        patient.id === state.editingId ? record : patient,
-      );
+    const payload = state.editingId
+      ? { ...record, id: state.editingId }
+      : record;
 
-      return record;
-    }
-
-    const response = await api.post("patients/upsert.php", { record });
+    const response = await api.post("patients/upsert.php", { payload });
 
     return response;
   },
 
-  remove(id) {
-    state.patients = state.patients.filter((patient) => patient.id !== id);
+  async remove(id) {
+    const response = await api.post("patients/delete.php", { patientId: id });
+
+    return response;
   },
 };

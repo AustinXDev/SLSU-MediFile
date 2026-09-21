@@ -1,11 +1,12 @@
 import { state } from "./state.js";
-import { dom } from "../utils/dom.js";
+import { dom, selected } from "../utils/dom.js";
 import { dateUtils } from "../utils/dateUtils.js";
 import { patientData } from "./patientData.js";
 import { patientSearch } from "./patientSearch.js";
 import { patientTable } from "./patientTable.js";
 import { patientModal } from "./patientModal.js";
 import { patientForm } from "./patientForm.js";
+import { dentalRecordValidation } from "./patientValidation.js";
 
 export const patientEvents = {
   bind() {
@@ -61,12 +62,16 @@ export const patientEvents = {
         dom.setValue("age", dateUtils.ageFromDob(dom.value("dateOfBirth"))),
       );
 
+    dom.get("next")?.addEventListener("click", () => patientForm.nextPage());
+
+    dom
+      .get("previous")
+      ?.addEventListener("click", () => patientForm.previousPage());
+
     document.addEventListener("click", (e) => {
       if (e.target.closest("#patientsBody button[data-action]")) {
         this.handlePatientAction(e);
       }
-
-      console.log("even clicked");
 
       // Check pagination clicks
       if (e.target.closest("#pagination button[data-page]")) {
@@ -77,6 +82,15 @@ export const patientEvents = {
     dom.get("patientModal")?.addEventListener("click", (event) => {
       if (event.target === dom.get("patientModal")) patientModal.close();
     });
+
+    selected.get(".dental-field")?.forEach((field) => {
+      field.addEventListener("blur", (e) => {
+        const value = e.target.value;
+        const id = field.id;
+
+        dentalRecordValidation.validate(id, value);
+      });
+    });
   },
 
   handlePatientAction(event) {
@@ -85,8 +99,6 @@ export const patientEvents = {
 
     const action = button.dataset.action;
     const id = button.dataset.id;
-
-    console.log("Clicked action:", action, "for ID:", id); // Now correctly defined
 
     const patient = patientData.find(id);
     if (!patient) {
@@ -99,8 +111,9 @@ export const patientEvents = {
         StatusModal.confirm(
           "Delete patient record?",
           `This will remove ${patientData.fullName(patient)}'s record from the patient list.`,
-          () => {
+          async () => {
             patientData.remove(patient.id);
+            await patientData.load();
             patientTable.render();
           },
         );

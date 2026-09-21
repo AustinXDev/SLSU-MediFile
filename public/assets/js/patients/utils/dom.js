@@ -26,4 +26,19 @@ export const selected = {
 
     return selectedHistory;
   },
+
+  arrayValue(query) {
+    const selectedQuery = this.get(query);
+    const teethData = {};
+
+    selectedQuery.forEach((input) => {
+      const val = input.value.trim();
+
+      if (val !== "") {
+        teethData[input.id] = val;
+      }
+    });
+
+    return teethData;
+  },
 };

@@ -26,10 +26,7 @@ export const patientSearch = {
     const filters = this.getFilters();
 
     return state.patients.filter((patient) => {
-      console.log(patient);
       const name = patientData.fullName(patient).toLowerCase();
-
-      console.log(name);
 
       const age = dateUtils.ageFromDob(patient.dob);
 

@@ -1,5 +1,5 @@
 import { state } from "./state.js";
-import { dom } from "../utils/dom.js";
+import { dom, selected } from "../utils/dom.js";
 import { dateUtils } from "../utils/dateUtils.js";
 import { patientData } from "./patientData.js";
 import { patientValidation } from "./patientValidation.js";
@@ -9,13 +9,22 @@ export const patientModal = {
     state.editingId = patient?.id || null;
     state.viewOnly = viewOnly;
 
+    console.log("editing state ", state.editingId);
+
     dom.get("patientForm").reset();
     patientValidation.clear();
 
     const record = patient || { id: patientData.nextId() };
+    const history = record?.past_history ? JSON.parse(record.past_history) : [];
+    const socialHistory = record?.social_history
+      ? JSON.parse(record.social_history)
+      : [];
+
+    console.log(history);
 
     const fields = {
       patientId: record.id,
+      examinationId: record.examinationId,
       patientIdDisplay: record.id,
       surName: record.surname,
       firstName: record.firstname,
@@ -33,9 +42,44 @@ export const patientModal = {
       emergencyName: record.emergencyName,
       emergencyNumber: record.emergencyNumber,
       emergencyAddress: record.emergencyAddress,
+      bloodPressure: record.blood_pressure,
+      temp: record.temperature,
+      pulse: record.pulse_rate,
+      respRate: record.respiratory_rate,
+      height: record.height_cm,
+      weight: record.weight_kg,
+      idealWeight: record.ideal_body_weight_kg,
+      headNeck: record.head_neck,
+      respiratory: record.respiratory,
+      cardioVascular: record.cardiovascular,
+      gastroIntestinal: record.gastrointestinal,
+      genitoUrinary: record.genitourinary,
+      extremities: record.extremities,
+      neurologic: record.neurologic,
+      suggestion: record.suggestions_treatment,
+      laboratory: record.laboratory_results,
+      previousHospitalization: record.previous_hospitalization,
+      previousOperation: record.previous_operation,
+      previousTrauma: record.previous_trauma,
+      sportsDefinition: record.sports_specification,
+    };
+
+    const name = {
+      history: history,
+      socialHistory: socialHistory,
     };
 
     Object.entries(fields).forEach(([id, value]) => dom.setValue(id, value));
+
+    Object.entries(name).forEach(([fieldName, historyValues]) => {
+      const inputs = selected.get(`input[name=${fieldName}]`);
+      console.log("Inputs: ", inputs);
+      console.log("values: ", historyValues);
+
+      inputs?.forEach((input) => {
+        input.checked = historyValues.includes(input.value);
+      });
+    });
 
     dom.get("patientModalTitle").textContent = viewOnly
       ? "Patient Record"

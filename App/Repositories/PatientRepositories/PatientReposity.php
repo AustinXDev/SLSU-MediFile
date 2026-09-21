@@ -17,27 +17,35 @@ class PatientReposity
     public function getAll(): array
     {
         $sql = "SELECT 
-                patient_id AS id,
-                surname,
-                firstname AS firstname,
-                middlename AS middlename,
-                birthdate AS dob,
-                sex AS gender,
-                civil_status AS civilStatus,
-                religion,
-                nationality,
-                college_dept AS department,
-                job_position_course AS position,
-                home_address AS address,
-                tel_no AS contact,
-                ice_guardian_name AS emergencyName,
-                ice_address AS emergencyAddress,
-                ice_tel_no AS emergencyNumber,
-                created_at AS createdAt,
-                is_active AS status
-            FROM patients
-            WHERE is_active = 1
-            ORDER BY patient_id ASC";
+                pe.*,
+                pe.id AS examinationId,
+                p.patient_id AS id,
+                p.patient_id AS patient_id,
+                p.surname,
+                p.firstname AS firstname,
+                p.middlename AS middlename,
+                p.birthdate AS dob,
+                p.sex AS gender,
+                p.civil_status AS civilStatus,
+                p.religion,
+                p.nationality,
+                p.college_dept AS department,
+                p.job_position_course AS position,
+                p.home_address AS address,
+                p.tel_no AS contact,
+                p.ice_guardian_name AS emergencyName,
+                p.ice_address AS emergencyAddress,
+                p.ice_tel_no AS emergencyNumber,
+                p.created_at AS createdAt,
+                p.is_active AS status
+
+            FROM patients p
+
+            LEFT JOIN patient_medical_examinations pe
+            ON pe.patient_id = p.patient_id
+
+            WHERE p.is_active = 1
+            ORDER BY p.created_at DESC";
 
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
@@ -142,6 +150,22 @@ class PatientReposity
             $patientId
         ]);
 
+
+    }
+
+
+    public function delete(
+        int $patientId
+    ): bool {
+
+        $sql = "DELETE FROM patients
+                WHERE patient_id = ?";
+
+        $stmt = $this->pdo->prepare($sql);
+
+        return $stmt->execute([
+            $patientId
+        ]);
 
     }
 

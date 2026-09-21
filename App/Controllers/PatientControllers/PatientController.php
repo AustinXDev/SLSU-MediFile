@@ -27,4 +27,14 @@ class PatientController
 
     }
 
+    public function delete(
+        array $data
+    ) {
+
+        $patientId = (int) ($data['patientId'] ?? 0);
+
+        return $this->service->delete($patientId);
+
+    }
+
 }

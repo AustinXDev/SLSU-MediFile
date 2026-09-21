@@ -305,6 +305,7 @@
   border: 1px solid var(--border);
   border-radius: 15px;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+  position: relative;
 }
 .patient-modal-header {
   display: flex;
@@ -336,6 +337,7 @@
   background: #f8faf9;
   color: var(--text-dark);
 }
+
 #patientForm {
   padding: 20px 20px 20px;
 }
@@ -633,14 +635,18 @@
   border-color: #fca5a5;
   background: #fffafa;
 }
+
 .form-actions {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
   margin-top: 24px;
   padding-top: 18px;
+  padding-right: 10px;
+
   border-top: 1px solid #eef2f0;
 }
+
 .cancel-button {
   min-height: 40px;
   padding: 0 15px;
@@ -650,6 +656,17 @@
   font-size: 10px;
   font-weight: 600;
 }
+
+.previous-button {
+  min-height: 40px;
+  padding: 0 15px;
+  border: 1px solid #e5ebe8;
+  border-radius: 9px;
+  color: #6f7b76;
+  font-size: 10px;
+  font-weight: 600;
+}
+
 .cancel-button:hover {
   background: #f8faf9;
   color: var(--text-dark);
@@ -666,6 +683,188 @@
 
 .hidden {
   display: none;
+}
+
+.dental-container {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  padding: 0.75rem;
+  border-radius: 10px;
+}
+
+.dental-header * {
+  color: var(--green-700);
+}
+
+.dental-header span {
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.dental-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.legend-container {
+  margin-top: 10px;
+  grid-column: span 1;
+}
+
+.legend-container h3 {
+  font-size: small;
+  font-weight: 400;
+  color: var(--text-muted);
+}
+.legend-item-container {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legend-icon {
+  width: 25px;
+  height: 25px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--green-600);
+}
+
+.legend-icon i {
+  font-size: small;
+}
+
+.caries {
+  color: #eaecee;
+}
+
+.legend-content {
+  display: inline-flex;
+  gap: 2px;
+  font-size: smaller;
+}
+
+.legend-content > .legend-label {
+  color: var(--text-muted);
+}
+
+.dental-form {
+  width: 100%;
+  max-width: 700px;
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: hidden;
+  align-content: center;
+
+  grid-column: span 2;
+}
+
+.upper-container,
+.lower-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: max-content;
+  padding: 10px;
+}
+
+.dental-divider {
+  height: 1px;
+  width: 100%;
+  background-color: var(--green-100);
+}
+
+.right-label,
+.left-label {
+  flex: 0 0 10%;
+  text-align: center;
+  font-size: small;
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.upper-container > .upper-teeth,
+.lower-container > .lower-teeth {
+  flex: 1;
+  border-left: 1px solid var(--green-100);
+  border-right: 1px solid var(--green-100);
+}
+
+.upper-teeth,
+.lower-teeth {
+  display: grid;
+  grid-template-columns: repeat(16, minmax(0, 1fr));
+}
+
+.upper-teeth input,
+.lower-teeth input {
+  height: 20px;
+  width: 20px;
+  border-radius: 2px;
+  border: 1px solid var(--text-muted);
+  font-size: 11px;
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.upper-teeth-item {
+  display: flex;
+  flex-direction: column;
+  justify-items: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.upper-teeth-item label,
+.lower-teeth-item label {
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: 11px;
+}
+
+.upper-teeth-item i,
+.lower-teeth-item i {
+  font-size: 30px;
+  color: #ffffff;
+  -webkit-text-stroke: 1px var(--green-700);
+  transition: all 0.2s ease;
+}
+
+.upper-teeth-item i {
+  transform: rotate(180deg);
+}
+
+.upper-teeth-item:hover i {
+  color: #d1fae5;
+  transform: rotate(180deg) translateY(-2px);
+}
+
+.lower-teeth-item:hover i {
+  color: #d1fae5;
+  transform: translateY(-2px);
+}
+
+.lower-teeth-item {
+  display: flex;
+  flex-direction: column-reverse;
+  justify-items: center;
+  align-items: center;
+  gap: 4px;
+}
+
+.dental-field.has-error {
+  border-color: #fca5a5;
+  background: #fffafa;
 }
 
 @media (max-width: 1050px) {
@@ -720,6 +919,7 @@
 
   .patient-modal {
     max-height: calc(100vh - 20px);
+    position: relative;
   }
 
   .patient-modal-header,
@@ -776,6 +976,10 @@
 
   .full-field {
     grid-column: auto;
+  }
+
+  .dental-grid {
+    grid-template-columns: 1fr;
   }
 }
 
