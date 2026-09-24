@@ -24,8 +24,9 @@ class DentalRecordRepository
         array $dentalRecords
     ): int {
 
-        $teethData = !empty($dentalRecords['teethData'])
-                    ? json_encode($dentalRecords['teethData']) : null;
+        $teethData = json_encode(
+            $dentalRecords['teethData'] ?? []
+        );
 
 
         $sql = "INSERT INTO patient_dental_records (
@@ -52,23 +53,32 @@ class DentalRecordRepository
      */
     public function update(
         int $dentalId,
-        array $dentalRecords,
+        array $dentalRecords
     ): bool {
 
-        $teethData = !empty($dentalRecords['teethData'] ? json_encode($dentalRecords['teethData']) : null);
+        $teethData = $dentalRecords['teethData'] ?? [];
 
-        $sql = "UPDATE patient_dental_records
-                SET 
-                  teeth_data = ?
-                WHERE dental_id = ?";
+        if (!is_array($teethData)) {
+            $teethData = [];
+        }
+
+        $teethData = json_encode(
+            $teethData,
+            JSON_UNESCAPED_UNICODE | JSON_THROW_ON_ERROR
+        );
+
+        $sql = "
+        UPDATE patient_dental_records
+        SET teeth_data = ?
+        WHERE dental_id = ?
+    ";
 
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute([
-          $teethData,
-          $dentalId
+            $teethData,
+            $dentalId
         ]);
-
     }
 
 

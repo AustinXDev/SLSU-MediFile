@@ -5,12 +5,11 @@ require_once __DIR__ . '/../../config/init.php';
 use App\Repositories\AdminRepository;
 use App\Repositories\LoginAttemptRepository;
 use App\Repositories\TwoFactorRepository;
-
 use App\Services\Auth\Login\LoginService;
 use App\Services\Auth\Login\LoginRateLimiter;
 use App\Services\Auth\TwoFactor\TwoFactorService;
-
 use App\Controllers\Auth\LoginController\LoginController;
+use App\Session\SessionManager;
 use App\Provider\Mailer;
 
 header('Content-Type: application/json');
@@ -95,6 +94,11 @@ try {
         $mailer
     );
 
+    /**
+     * Session Manager
+     */
+    $sessionManager = new SessionManager();
+
 
     /**
      * Login service
@@ -102,7 +106,8 @@ try {
     $auth = new LoginService(
         $adminRepo,
         $rateLimiter,
-        $twoFactorService
+        $twoFactorService,
+        $sessionManager
     );
 
 

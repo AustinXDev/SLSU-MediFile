@@ -34,6 +34,8 @@ export const patientData = {
 
       state.patients = response?.data?.data || response;
 
+      console.log(state.patients);
+
       return state.patients;
     } catch (error) {
       console.error("Failed to fetch patients:", error);

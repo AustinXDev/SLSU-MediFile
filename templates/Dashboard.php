@@ -1,3 +1,15 @@
+<?php
+
+use App\Middleware\AdminMiddleware;
+use App\Session\SessionManager;
+
+$session = new SessionManager();
+$middleware = new AdminMiddleware($session);
+
+$middleware->requireAuth();
+
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -43,8 +55,13 @@
             </div>
 
             <div class="admin-info">
-                <strong>Administrator</strong>
-                <span>System Administrator</span>
+                <strong>
+                    <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
+                </strong>
+
+                <span>
+                    <?= htmlspecialchars($session->get('role') ?? '') ?>
+                </span>
 
                 <small>
                     <i></i>
@@ -211,8 +228,15 @@
                     </div>
 
                     <div class="profile-details">
-                        <strong>Administrator</strong>
-                        <span>Admin</span>
+
+                        <strong>
+                            <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
+                        </strong>
+
+                        <span>
+                            <?= htmlspecialchars($session->get('role') ?? '') ?>
+                        </span>
+
                     </div>
 
                     <span class="profile-arrow"><i class="fa-solid fa-chevron-down"></i></span>

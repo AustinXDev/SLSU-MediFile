@@ -92,6 +92,7 @@ class PhysicalExaminationRepository
         array $exam,
         array $histories
     ): bool {
+
         $pastHistory   = !empty($histories['conditions']) ? json_encode($histories['conditions']) : null;
         $socialHistory = !empty($histories['socialHistory']['habits']) ? json_encode($histories['socialHistory']['habits']) : null;
 

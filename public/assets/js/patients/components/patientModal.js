@@ -19,12 +19,16 @@ export const patientModal = {
     const socialHistory = record?.social_history
       ? JSON.parse(record.social_history)
       : [];
+    const teethData = record?.teeth_data ? JSON.parse(record.teeth_data) : [];
+    const treatmentPlan = record?.treatmentPlan ? record.treatmentPlan : [];
 
     console.log(history);
+    console.log(teethData);
 
     const fields = {
       patientId: record.id,
       examinationId: record.examinationId,
+      dentalId: record.dental_id,
       patientIdDisplay: record.id,
       surName: record.surname,
       firstName: record.firstname,
@@ -81,6 +85,9 @@ export const patientModal = {
       });
     });
 
+    this.renderDental(teethData);
+    this.renderTreatmentPlan(treatmentPlan);
+
     dom.get("patientModalTitle").textContent = viewOnly
       ? "Patient Record"
       : patient
@@ -100,5 +107,32 @@ export const patientModal = {
   close() {
     dom.get("patientModal").hidden = true;
     document.body.style.overflow = "";
+  },
+
+  renderDental(teethData) {
+    selected.get(".dental-field").forEach((field) => {
+      const toothId = field.id;
+
+      if (!toothId) return;
+
+      field.value = teethData?.[toothId] ?? "";
+      field.classList.remove("has-error");
+    });
+  },
+
+  renderTreatmentPlan(treatmentPlan) {
+    selected
+      .get('.treatment-field textarea[name^="treatment_plan["]')
+      .forEach((textarea) => {
+        const match = textarea.name.match(/^treatment_plan\[(.+)\]$/);
+
+        if (!match) return;
+
+        const fieldKey = match[1];
+
+        console.log("Field key:", fieldKey);
+
+        textarea.value = treatmentPlan?.[fieldKey] ?? "";
+      });
   },
 };

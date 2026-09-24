@@ -7,6 +7,7 @@ import { patientTable } from "./patientTable.js";
 import { patientModal } from "./patientModal.js";
 import { patientForm } from "./patientForm.js";
 import { dentalRecordValidation } from "./patientValidation.js";
+import { Loader } from "../../components/loader.js";
 
 export const patientEvents = {
   bind() {
@@ -44,9 +45,10 @@ export const patientEvents = {
       .get("addPatientButton")
       ?.addEventListener("click", () => patientModal.open());
 
-    dom
-      .get("closePatientModal")
-      ?.addEventListener("click", () => patientModal.close());
+    dom.get("closePatientModal")?.addEventListener("click", () => {
+      patientForm.showPage(1);
+      patientModal.close();
+    });
 
     dom
       .get("cancelPatient")
@@ -79,10 +81,6 @@ export const patientEvents = {
       }
     });
 
-    dom.get("patientModal")?.addEventListener("click", (event) => {
-      if (event.target === dom.get("patientModal")) patientModal.close();
-    });
-
     selected.get(".dental-field")?.forEach((field) => {
       field.addEventListener("blur", (e) => {
         const value = e.target.value;
@@ -106,20 +104,41 @@ export const patientEvents = {
       return;
     }
 
+    const load = new Loader({
+      text: "Deleting patient record...",
+    });
+
     if (action === "delete") {
       if (typeof StatusModal !== "undefined") {
         StatusModal.confirm(
           "Delete patient record?",
           `This will remove ${patientData.fullName(patient)}'s record from the patient list.`,
           async () => {
-            patientData.remove(patient.id);
-            await patientData.load();
-            patientTable.render();
+            load.show();
+            try {
+              const response = patientData.remove(patient.id);
+
+              if (response.status === "error") {
+                StatusModal.show("Failed", "Failed to delete patient record.");
+              }
+
+              StatusModal.show(
+                "Success",
+                `${patientData.fullName(patient)}'s record was successfully deleted.`,
+              );
+
+              await patientData.load();
+
+              patientTable.render();
+            } catch (error) {
+              load.hide();
+              console.error(error);
+              StatusModal.show("Failed", "Failed to delete patient record.");
+            } finally {
+              load.hide();
+            }
           },
         );
-      } else if (confirm(`Delete ${patientData.fullName(patient)}?`)) {
-        patientData.remove(patient.id);
-        patientTable.render();
       }
       return;
     }

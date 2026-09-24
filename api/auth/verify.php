@@ -1,4 +1,5 @@
-<?php 
+<?php
+
 require_once __DIR__ . '/../../config/init.php';
 
 use App\Repositories\AdminRepository;
@@ -6,70 +7,70 @@ use App\Services\Auth\Login\LoginRateLimiter;
 use App\Repositories\LoginAttemptRepository;
 use App\Repositories\TwoFactorRepository;
 use App\Services\Auth\TwoFactor\TwoFactorService;
-
 use App\Services\Auth\Login\LoginService;
-
 use App\Controllers\Auth\LoginController\LoginController;
-
+use App\Session\SessionManager;
 use App\Provider\Mailer;
 
 header('Content-type: application/json');
 
 try {
 
-  $input = json_decode(
-    file_get_contents('php://input'),
-    true
-  ) ?? [];
+    $input = json_decode(
+        file_get_contents('php://input'),
+        true
+    ) ?? [];
 
-  $code = trim($input['code'] ?? '');
+    $code = trim($input['code'] ?? '');
 
-  $ip = $_SERVER['REMOTE_ADDR'] ?? '';
+    $ip = $_SERVER['REMOTE_ADDR'] ?? '';
 
-  require_once __DIR__ . '/../../App/database/database.php';
+    require_once __DIR__ . '/../../App/database/database.php';
 
-  /**
-   * Repositories
-   */
-  $adminRepo = new AdminRepository($pdo);
-  $attemptsRepo = new LoginAttemptRepository($pdo);
-  $twoFactorRepo = new TwoFactorRepository($pdo);
+    /**
+     * Repositories
+     */
+    $adminRepo = new AdminRepository($pdo);
+    $attemptsRepo = new LoginAttemptRepository($pdo);
+    $twoFactorRepo = new TwoFactorRepository($pdo);
 
-  $rateLimiter = new LoginRateLimiter($attemptsRepo);
+    $rateLimiter = new LoginRateLimiter($attemptsRepo);
 
-  $mailer = new Mailer();
+    $mailer = new Mailer();
 
-  /**
-   * Services
-   */
-  $twoFactorService = new TwoFactorService($adminRepo, $twoFactorRepo, $mailer);
+    /**
+     * Services
+     */
+    $twoFactorService = new TwoFactorService($adminRepo, $twoFactorRepo, $mailer);
 
-  $service = new LoginService($adminRepo, $rateLimiter, $twoFactorService);
+    /**
+     * Session Manager
+     */
+    $sessionManager = new SessionManager();
 
-  /**
-   * Controllers
-   */
-  $controller = new LoginController($service);
+    $service = new LoginService($adminRepo, $rateLimiter, $twoFactorService, $sessionManager);
 
-  $reponse = $controller->verify($code, $ip);
+    /**
+     * Controllers
+     */
+    $controller = new LoginController($service);
 
-  /**
-   * Success
-   */
-  http_response_code(200);
+    $reponse = $controller->verify($code, $ip);
 
-  echo json_encode($reponse);
+    /**
+     * Success
+     */
+    http_response_code(200);
+
+    echo json_encode($reponse);
 
 } catch (Throwable $e) {
 
-  http_response_code(400);
+    http_response_code(400);
 
-  echo json_encode([
-    'status'  => 'error',
-    'message' =>  $e->getMessage()
-  ]);
+    echo json_encode([
+      'status'  => 'error',
+      'message' =>  $e->getMessage()
+    ]);
 
 }
-
-
-?>

@@ -1,4 +1,4 @@
-<?php 
+<?php
 require_once __DIR__ . '/../../config/init.php';
 ?>
 
@@ -181,6 +181,6 @@ require_once __DIR__ . '/../../config/init.php';
     type="module"
     src="<?= BASE_URL ?>assets/js/auth/login/main.js">
 </script>
-<script src="<?= BASE_URL ?>assets/components/modal.js"></script>
+<script src="<?= BASE_URL ?>assets/js/components/modal.js"></script>
 </body>
 </html>

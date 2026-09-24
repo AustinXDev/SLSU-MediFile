@@ -4,7 +4,7 @@ namespace App\Repositories\PatientRepositories;
 
 use PDO;
 
-class PatientReposity
+class PatientRepository
 {
     protected PDO $pdo;
 
@@ -18,6 +18,8 @@ class PatientReposity
     {
         $sql = "SELECT 
                 pe.*,
+                pd.*,
+                pd.dental_id,
                 pe.id AS examinationId,
                 p.patient_id AS id,
                 p.patient_id AS patient_id,
@@ -38,11 +40,14 @@ class PatientReposity
                 p.ice_tel_no AS emergencyNumber,
                 p.created_at AS createdAt,
                 p.is_active AS status
-
+            
             FROM patients p
 
             LEFT JOIN patient_medical_examinations pe
             ON pe.patient_id = p.patient_id
+
+            LEFT JOIN patient_dental_records pd
+            ON pd.patient_id = p.patient_id
 
             WHERE p.is_active = 1
             ORDER BY p.created_at DESC";
@@ -50,7 +55,19 @@ class PatientReposity
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute();
 
-        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+        $patients = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+
+        foreach ($patients as &$patient) {
+            $patient['treatmentPlan'] = $this->getTreatmentPlan(
+                !empty($patient['dental_id'])
+                    ? (int) $patient['dental_id']
+                    : null
+            );
+        }
+
+        unset($patient);
+
+        return $patients;
     }
 
     /**
@@ -167,6 +184,44 @@ class PatientReposity
             $patientId
         ]);
 
+    }
+
+
+    /**
+     * Get the treatment plan
+     */
+    private function getTreatmentPlan(?int $dentalId): array
+    {
+        if (!$dentalId) {
+            return [];
+        }
+
+        $sql = "
+        SELECT
+            dc.clinic_key,
+            ptp.treatment
+        FROM patient_dental_treatment_plans ptp
+
+        INNER JOIN dental_clinics dc
+            ON dc.clinic_id = ptp.clinic_id
+
+        WHERE ptp.dental_id = ?
+
+        ORDER BY dc.sort_order ASC
+    ";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$dentalId]);
+
+        $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $treatmentPlan = [];
+
+        foreach ($rows as $row) {
+            $treatmentPlan[$row['clinic_key']] = $row['treatment'];
+        }
+
+        return $treatmentPlan;
     }
 
 }

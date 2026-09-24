@@ -2,9 +2,11 @@
 
 namespace App\Services\PatientServices;
 
-use App\Repositories\PatientRepositories\PatientReposity;
+use App\Repositories\PatientRepositories\PatientRepository;
 use App\Repositories\PatientRepositories\PhysicalExaminationRepository;
 use App\Repositories\PatientRepositories\DentalRecordRepository;
+use App\Repositories\PatientRepositories\DentalClinicRepository;
+use App\Repositories\PatientRepositories\DentaTreatmentPlanRepository;
 use PDO;
 use RuntimeException;
 use Throwable;
@@ -12,22 +14,28 @@ use Throwable;
 class PatientService
 {
     protected PDO $pdo;
-    protected PatientReposity $patientRepo;
+    protected PatientRepository $patientRepo;
     protected PhysicalExaminationRepository $physicalExamRepo;
     protected DentalRecordRepository $dentalRepo;
+    protected DentalClinicRepository $dentalClinicRepo;
+    protected DentaTreatmentPlanRepository $dentalTreatmentRepo;
 
 
     public function __construct(
         PDO $pdo,
-        PatientReposity $patientRepo,
+        PatientRepository $patientRepo,
         PhysicalExaminationRepository $physicalExamRepo,
-        DentalRecordRepository $dentalRepo
+        DentalRecordRepository $dentalRepo,
+        DentalClinicRepository $dentalClinicRepo,
+        DentaTreatmentPlanRepository $dentalTreatmentRepo
     ) {
 
         $this->pdo = $pdo;
         $this->patientRepo = $patientRepo;
         $this->physicalExamRepo = $physicalExamRepo;
         $this->dentalRepo = $dentalRepo;
+        $this->dentalClinicRepo = $dentalClinicRepo;
+        $this->dentalTreatmentRepo = $dentalTreatmentRepo;
 
     }
 
@@ -62,7 +70,11 @@ class PatientService
 
         $dental_record = $patient_data['dental_record'] ?? [];
 
-        $dentalId = !empty($dental_record['id'] ? (int)$dental_record['id'] : null);
+        $dentalId = !empty($dental_record['id'])
+        ? (int) $dental_record['id']
+        : null;
+
+        $treatmentPlan = $patient_data['treatmentPlan'] ?? [];
 
 
         if (!is_array($basicInfo) || empty($basicInfo)) {
@@ -146,6 +158,8 @@ class PatientService
                 );
             }
 
+            $this->saveTreatmentPlan($dentalId, $treatmentPlan);
+
             $this->pdo->commit();
 
             return [
@@ -212,6 +226,36 @@ class PatientService
                 $e
             );
         }
+    }
+
+    private function saveTreatmentPlan(
+        int $dentalId,
+        array $treatmentPlan
+    ): void {
+
+        foreach ($treatmentPlan as $clinicKey => $treatment) {
+
+            $treatment = trim((string) $treatment);
+
+            // Find clinic ID from the stable clinic key
+            $clinicId = $this->dentalClinicRepo->findIdByKey(
+                $clinicKey
+            );
+
+            if ($clinicId === null) {
+                throw new RuntimeException(
+                    "Unknown dental clinic: {$clinicKey}"
+                );
+            }
+
+            // Insert / update / delete
+            $this->dentalTreatmentRepo->upsert(
+                $dentalId,
+                $clinicId,
+                $treatment
+            );
+        }
+
     }
 
 }

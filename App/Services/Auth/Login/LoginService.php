@@ -4,6 +4,7 @@ namespace App\Services\Auth\Login;
 
 use App\Repositories\AdminRepository;
 use App\Services\Auth\TwoFactor\TwoFactorService;
+use App\Session\SessionManager;
 use RuntimeException;
 
 class LoginService
@@ -14,7 +15,8 @@ class LoginService
     public function __construct(
         private AdminRepository $admins,
         private LoginRateLimiter $rateLimiter,
-        private TwoFactorService $twoFactorService
+        private TwoFactorService $twoFactorService,
+        private SessionManager $session
     ) {
     }
 
@@ -115,15 +117,13 @@ class LoginService
         /**
          * Store pending authentication
          */
-        $_SESSION['admin_2fa_pending'] = true;
+        $this->session->set('admin_2fa_pending', true);
 
-        $_SESSION['admin_2fa_id'] =
-            $admin->adminId;
+        $this->session->set('admin_2fa_id', $admin->adminId);
 
-        $_SESSION['admin_2fa_expires_at'] =
-            time() + (
-                self::OTP_EXPIRATION_MINUTES * 60
-            );
+        $expiration = time() + (self::OTP_EXPIRATION_MINUTES * 60);
+
+        $this->session->set('admin_2fa_expires_at', $expiration);
 
 
         return [
@@ -144,8 +144,8 @@ class LoginService
          * Check 2FA is pending
          */
         if (
-            empty($_SESSION['admin_2fa_pending']) ||
-            empty($_SESSION['admin_2fa_id'])
+            empty($this->session->get('admin_2fa_pending')) ||
+            empty($this->session->get('admin_2fa_id'))
         ) {
 
             throw new RuntimeException(
@@ -158,15 +158,13 @@ class LoginService
          * Check expiration
          */
         if (
-            empty($_SESSION['admin_2fa_expires_at']) ||
-            time() > $_SESSION['admin_2fa_expires_at']
+            empty($this->session->get('admin_2fa_expires_at')) ||
+            time() > $this->session->get('admin_2fa_expires_at')
         ) {
 
-            unset(
-                $_SESSION['admin_2fa_pending'],
-                $_SESSION['admin_2fa_id'],
-                $_SESSION['admin_2fa_expires_at']
-            );
+            $this->session->remove('admin_2fa_pending');
+            $this->session->remove('admin_2fa_id');
+            $this->session->remove('admin_2fa_expires_at');
 
             throw new RuntimeException(
                 'Your verification session has expired. Please log in again.'
@@ -174,7 +172,7 @@ class LoginService
         }
 
 
-        $adminId = (int) $_SESSION['admin_2fa_id'];
+        $adminId = (int) $this->session->get('admin_2fa_id');
 
 
         /**
@@ -218,20 +216,18 @@ class LoginService
         /**
          * Create authenticated session
          */
-        $_SESSION['admin_authenticated'] = true;
-        $_SESSION['admin_id'] = $adminId;
-        $_SESSION['role'] = $admin->role;
-        $_SESSION['admin_username'] = $admin->username;
+        $this->session->set('admin_authenticated', true);
+        $this->session->set('admin_id', $adminId);
+        $this->session->set('role', $admin->role);
+        $this->session->set('admin_username', $admin->username);
 
 
         /**
          * Remove temporary 2FA session
          */
-        unset(
-            $_SESSION['admin_2fa_pending'],
-            $_SESSION['admin_2fa_id'],
-            $_SESSION['admin_2fa_expires_at']
-        );
+        $this->session->remove('admin_2fa_pending');
+        $this->session->remove('admin_2fa_id');
+        $this->session->remove('admin_2fa_expires_at');
 
 
         return [

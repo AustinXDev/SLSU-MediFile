@@ -7,6 +7,7 @@ import {
 } from "./patientValidation.js";
 import { patientModal } from "./patientModal.js";
 import { patientTable } from "./patientTable.js";
+import { Loader } from "../../components/loader.js";
 
 export const patientForm = {
   showPage(page) {
@@ -48,6 +49,25 @@ export const patientForm = {
     }
 
     return valid;
+  },
+
+  getTreatmentPlan() {
+    const treatmentPlan = {};
+
+    document
+      .querySelectorAll('.treatment-field textarea[name^="treatment_plan["]')
+      .forEach((textarea) => {
+        const match = textarea.name.match(/^treatment_plan\[(.+)\]$/);
+
+        if (!match) return;
+
+        const clinicKey = match[1];
+        const treatment = textarea.value.trim();
+
+        treatmentPlan[clinicKey] = treatment;
+      });
+
+    return treatmentPlan;
   },
 
   buildRecord() {
@@ -107,6 +127,7 @@ export const patientForm = {
         id: dom.value("dentalId") || null,
         teethData: selected.arrayValue(".dental-field"),
       },
+      treatmentPlan: this.getTreatmentPlan(),
     };
   },
 
@@ -121,6 +142,9 @@ export const patientForm = {
 
     const record = this.buildRecord();
     const isEditing = Boolean(state.editingId);
+    const load = new Loader({
+      text: `${isEditing ? "Updating patient record..." : "Saving new patient record..."}`,
+    });
 
     StatusModal.confirm(
       isEditing ? "Confirm Patient Update" : "Confirm New Patient",
@@ -128,15 +152,19 @@ export const patientForm = {
         ? "Are you sure you want to update this patient record?"
         : "Are you sure you want to add this new patient record?",
       async () => {
+        load.show();
         try {
           const response = await patientData.save(record);
 
-          if (response.status === "error") {
+          console.log(response);
+
+          if (response.data?.status === "error") {
             StatusModal.show(
               isEditing ? "Failed to Update" : "Failed to Save",
               `
-                ${patientData.fullName(record)}'s patient record was failed ${isEditing ? "update" : "save"}
+                ${patientData.fullName(record.basicInformation)}'s patient record was failed ${isEditing ? "update" : "save"}
               `,
+              "error",
             );
 
             return;
@@ -150,19 +178,24 @@ export const patientForm = {
 
           StatusModal.show(
             isEditing ? "Patient Updated" : "Patient Saved",
-            `${patientData.fullName(record)}'s patient record was ${
+            `${patientData.fullName(record.basicInformation)}'s patient record was ${
               isEditing ? "updated" : "saved"
             } successfully.`,
             "success",
           );
         } catch (error) {
           console.error(error);
+          load.hide();
 
           StatusModal.show(
             "Error",
             "Unable to save the patient record. Please try again.",
             "error",
           );
+
+          this.showPage(1);
+        } finally {
+          load.hide();
         }
       },
     );

@@ -1,5 +1,14 @@
 <?php
+use App\Middleware\AdminMiddleware;
+use App\Session\SessionManager;
+
+$session = new SessionManager();
+$middleware = new AdminMiddleware($session);
+
+$middleware->requireAuth();
+
 $pageTitle = 'Patients Record';
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,14 +39,13 @@ $pageTitle = 'Patients Record';
             <div class="admin-avatar">
               AD
             </div>
-
             <div class="admin-info">
               <strong>
-                Administrator
+                <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
               </strong>
 
               <span>
-                System Administrator
+                <?= htmlspecialchars($session->get('role') ?? '') ?>
               </span>
 
               <small>
@@ -200,11 +208,11 @@ $pageTitle = 'Patients Record';
 
                   <div class="profile-details">
                     <strong>
-                      Administrator
+                      <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
                     </strong>
 
                     <span>
-                      Admin
+                      <?= htmlspecialchars($session->get('role') ?? '') ?>
                     </span>
                   </div>
 
@@ -1055,6 +1063,8 @@ $pageTitle = 'Patients Record';
 
               <div class="page2-main-wrapper">
 
+                <input type="text" class="hidden" id="dentalId">
+
                 <div class="dental-container">
 
                   <div class="dental-header">
@@ -1644,6 +1654,108 @@ $pageTitle = 'Patients Record';
 
                   </div> 
 
+                  <div class="treatment-plan">
+
+                    <div class="treatment-plan-header">
+                      <h3>Treatment Plan</h3>
+                    </div>
+
+                    <div class="treatment-plan-list">
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Oral Surgery Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[oral_surgery]" id="oralSurgery" class="treatment-plan-field" rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Operative Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[operative]" id="operative" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Prosthodontia Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[prosthodontia]" id="prosthodontia" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Crown & Bridge Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[crown_bridge]" id="crownBridge" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Oral Medicine Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[oral_medicine]" id="oralMedicine" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>X-Ray Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[x_ray]" id="xRay" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Children's Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[children]" id="children" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Orthodontia Clinic</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[orthodontia]" id="orthodontia" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                      <div class="treatment-row">
+                        <div class="clinic-name">
+                          <span>Clinical Laboratory</span>
+                        </div>
+
+                        <div class="treatment-field">
+                          <textarea name="treatment_plan[clinical_lab]" id="clinical" class="treatment-plan-field"  rows="2"></textarea>
+                        </div>
+                      </div>
+
+                    </div>
+
+                  </div>
+
                 </div>
 
               </div>
@@ -1667,7 +1779,7 @@ $pageTitle = 'Patients Record';
 
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-<script src="<?= BASE_URL ?>assets/components/modal.js"></script>
+<script src="<?= BASE_URL ?>assets/js/components/modal.js"></script>
 <script src="<?= BASE_URL ?>assets/js/patients/index.js" type="module"></script>
 </body>
 </html>
