@@ -8,6 +8,8 @@ import {
 import { patientModal } from "./patientModal.js";
 import { patientTable } from "./patientTable.js";
 import { Loader } from "../../components/loader.js";
+import { serviceState } from "./state.js";
+import { calculateIdealWeight } from "../utils/calculateIdealWeight.js";
 
 export const patientForm = {
   showPage(page) {
@@ -28,7 +30,6 @@ export const patientForm = {
     }
 
     this.showPage(2);
-    console.log("Next Page");
   },
 
   previousPage() {
@@ -102,7 +103,7 @@ export const patientForm = {
         respRate: dom.value("respRate"),
         height: dom.value("height"),
         weight: dom.value("weight"),
-        idealWeight: dom.value("idealWeight"),
+        idealWeight: this.getIdealWeight(),
         headNeck: dom.value("headNeck"),
         respiratory: dom.value("respiratory"),
         cardioVascular: dom.value("cardioVascular"),
@@ -128,6 +129,9 @@ export const patientForm = {
         teethData: selected.arrayValue(".dental-field"),
       },
       treatmentPlan: this.getTreatmentPlan(),
+      dentalServices: serviceState
+        .getAll()
+        .filter((service) => !service.serviceId),
     };
   },
 
@@ -156,8 +160,6 @@ export const patientForm = {
         try {
           const response = await patientData.save(record);
 
-          console.log(response);
-
           if (response.data?.status === "error") {
             StatusModal.show(
               isEditing ? "Failed to Update" : "Failed to Save",
@@ -171,6 +173,7 @@ export const patientForm = {
           }
 
           this.showPage(1);
+          serviceState.clear();
           patientModal.close();
 
           await patientData.load();
@@ -199,5 +202,34 @@ export const patientForm = {
         }
       },
     );
+  },
+
+  initIdealWeight() {
+    const heightInput = dom.get("height");
+    const genderInput = dom.get("gender");
+    const idealWeightInput = dom.get("idealWeight");
+
+    if (!heightInput || !genderInput || !idealWeightInput) {
+      return;
+    }
+
+    const update = () => {
+      const idealWeight = calculateIdealWeight(
+        heightInput.value,
+        genderInput.value,
+      );
+
+      idealWeightInput.value =
+        idealWeight !== null ? idealWeight.toFixed(1) : "";
+    };
+
+    heightInput.addEventListener("input", update);
+    genderInput.addEventListener("change", update);
+
+    update();
+  },
+
+  getIdealWeight() {
+    return calculateIdealWeight(dom.value("height"), dom.value("gender"));
   },
 };

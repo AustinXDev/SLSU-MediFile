@@ -667,7 +667,7 @@ a {
 .statistics {
   display: grid;
 
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 
   gap: 16px;
 }
@@ -780,14 +780,25 @@ a {
   font-weight: 700;
 }
 
-.stat-change span {
-  color: #a0aaa6;
+.stat-change-value {
+  font-weight: 600;
+}
 
+.stat-change-label {
+  color: #a0aaa6;
   font-weight: 400;
 }
 
-.stat-change.positive {
+.stat-change-value.positive {
   color: var(--green-600);
+}
+
+.stat-change-value.negative {
+  color: #dc2626;
+}
+
+.stat-change-value.neutral {
+  color: #64748b;
 }
 
 /* =========================================================
@@ -1167,6 +1178,25 @@ a {
   width: 100%;
 
   overflow-x: auto;
+}
+
+.recent-table-wrapper {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+.recent-table-wrapper table {
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+.recent-table-wrapper th,
+.recent-table-wrapper td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 table {

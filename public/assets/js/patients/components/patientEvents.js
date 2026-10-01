@@ -4,10 +4,12 @@ import { dateUtils } from "../utils/dateUtils.js";
 import { patientData } from "./patientData.js";
 import { patientSearch } from "./patientSearch.js";
 import { patientTable } from "./patientTable.js";
-import { patientModal } from "./patientModal.js";
+import { patientModal, documentModal } from "./patientModal.js";
 import { patientForm } from "./patientForm.js";
 import { dentalRecordValidation } from "./patientValidation.js";
 import { Loader } from "../../components/loader.js";
+import { serviceState } from "./state.js";
+import { downloadDocument } from "../utils/downloadDocument.js";
 
 export const patientEvents = {
   bind() {
@@ -47,12 +49,16 @@ export const patientEvents = {
 
     dom.get("closePatientModal")?.addEventListener("click", () => {
       patientForm.showPage(1);
+      serviceState.clear();
       patientModal.close();
+
+      console.log(serviceState.getAll());
     });
 
-    dom
-      .get("cancelPatient")
-      ?.addEventListener("click", () => patientModal.close());
+    dom.get("cancelPatient")?.addEventListener("click", () => {
+      serviceState.clear();
+      patientModal.close();
+    });
 
     dom
       .get("patientForm")
@@ -81,6 +87,15 @@ export const patientEvents = {
       }
     });
 
+    dom.get("printDocument")?.addEventListener("click", () => {
+      window.print();
+    });
+
+    dom.get("downloadDocument")?.addEventListener("click", () => {
+      console.log("clicked");
+      downloadDocument();
+    });
+
     selected.get(".dental-field")?.forEach((field) => {
       field.addEventListener("blur", (e) => {
         const value = e.target.value;
@@ -88,6 +103,10 @@ export const patientEvents = {
 
         dentalRecordValidation.validate(id, value);
       });
+    });
+
+    dom.get("closeDocument")?.addEventListener("click", () => {
+      documentModal.close();
     });
   },
 
@@ -143,7 +162,12 @@ export const patientEvents = {
       return;
     }
 
-    patientModal.open(patient, action === "view");
+    if (action === "view") {
+      documentModal.open(patient);
+      return;
+    }
+
+    patientModal.open(patient, false);
   },
 
   handlePageChange(event) {

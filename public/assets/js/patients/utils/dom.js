@@ -11,6 +11,11 @@ export const dom = {
     const element = this.get(id);
     if (element) element.value = value || "";
   },
+
+  setText(id, value) {
+    const element = this.get(id);
+    if (element) element.innerText = value || "";
+  },
 };
 
 export const selected = {

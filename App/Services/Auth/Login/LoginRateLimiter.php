@@ -79,7 +79,7 @@ class LoginRateLimiter
         ?string $ip,
         string $reason,
         ?string $userAgent = null
-    ): void {
+    ): int {
 
         $this->attempts->recordLoginFailure(
             $adminId,
@@ -87,6 +87,12 @@ class LoginRateLimiter
             $ip,
             $reason,
             $userAgent
+        );
+
+        return $this->getFailureCount(
+            $adminId ?? 0,
+            $username,
+            $ip
         );
     }
 

@@ -1,4 +1,6 @@
 <?php
+require_once __DIR__ . '/../config/init.php';
+
 use App\Middleware\AdminMiddleware;
 use App\Session\SessionManager;
 
@@ -19,6 +21,7 @@ $pageTitle = 'Patients Record';
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/patients.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="dashboard">
@@ -76,26 +79,6 @@ $pageTitle = 'Patients Record';
 
               <span>
                 Patient Records
-              </span>
-            </a>
-
-            <a href="#" class="nav-item">
-              <span class="nav-icon">
-                <i class="fa-solid fa-file-medical"></i>
-              </span>
-
-              <span>
-                Medical Records
-              </span>
-            </a>
-
-            <a href="#" class="nav-item">
-              <span class="nav-icon">
-                <i class="fa-solid fa-calendar-check"></i>
-              </span>
-
-              <span>
-                Appointments
               </span>
             </a>
 
@@ -405,6 +388,7 @@ $pageTitle = 'Patients Record';
     </main>
 </div>
 
+<!-- Form Modal -->
 <div class="patient-modal-backdrop" id="patientModal" hidden>
 
     <section class="patient-modal" role="dialog" aria-modal="true" aria-labelledby="patientModalTitle">
@@ -757,10 +741,10 @@ $pageTitle = 'Patients Record';
                           <input
                             type="checkbox"
                             name="history"
-                            value="Hernia"
-                            id="hernia2"
+                            value="Immune Disease"
+                            id="immuneDisease"
                           >
-                          <label for="hernia2">Hernia</label>
+                          <label for="hernia2">Immune Disease</label>
                         </div>
 
                       </div>
@@ -1005,7 +989,7 @@ $pageTitle = 'Patients Record';
                           <label class="form-field">
                             <div class="field-span ">
                               <textarea name="suggestion" id="suggestion" class="long-text-field"
-                              wrap="off">
+                              wrap="soft">
 
                               </textarea>
                             </div>
@@ -1028,7 +1012,7 @@ $pageTitle = 'Patients Record';
                           <label class="form-field">
                             <div class="field-span ">
                               <textarea name="laboratory" id="laboratory" class="long-text-field"
-                              wrap="off">
+                              wrap="soft">
 
                               </textarea>
                             </div>
@@ -1756,6 +1740,62 @@ $pageTitle = 'Patients Record';
 
                   </div>
 
+                  <div class="service-history-container">
+
+                    <div class="service-history-header">
+
+                      <div class="service-history-head">
+                        <h3>
+                          Service History
+                        </h3>
+                      </div>
+
+                      <div class="button-container">
+                        <button
+                          type="button"
+                          class="add-service-button primary-button"
+                          data-action="addService"
+                          data-add-service
+                          id="addServiceBtn">
+                          <i class="fa-solid fa-clipboard-list"></i>
+                          Add Service
+                        </button>
+                      </div>
+
+                      <div class="history-container">
+
+                        <table id="serviceHistoryTable" class="service-history-table">
+                          
+                          <thead>
+                            <colgroup>
+                              <col class="col-date">
+                              <col class="col-service">
+                              <col class="col-patient">
+                              <col class="col-dentist">
+                              <col class="col-actions">
+                            </colgroup>
+
+                            <tr>
+                              <th>Date</th>
+                              <th>Service Rendered</th>
+                              <th>Patient's Signature</th>
+                              <th>Dentist's Signature</th>
+                              <th>Actions</th>
+                            </tr>
+                          </thead>
+
+                          <tbody id="serviceHistoryBody">
+                            
+                          </tbody>
+
+                        </table>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
                 </div>
 
               </div>
@@ -1774,10 +1814,1119 @@ $pageTitle = 'Patients Record';
 
           </form>
 
+          <!-- ADD SERVICE MODAL -->
+          <div
+            id="addServiceModal"
+            class="service-modal"
+          >
+            <div class="service-modal-overlay" data-close-service-modal></div>
+
+            <div
+              class="service-modal-dialog"
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="addServiceModalTitle"
+            >
+
+              <!-- Header -->
+              <div class="service-modal-header">
+
+                <div class="service-modal-title">
+                  <div class="service-modal-icon">
+                    <i class="fa-solid fa-clipboard-list"></i>
+                  </div>
+
+                  <div>
+                    <h2 id="addServiceModalTitle">
+                      Add Dental Service
+                    </h2>
+
+                    <p>
+                      Record a service performed for this patient.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  id="closeServiceModal"
+                  class="service-modal-close"
+                  data-close-service-modal
+                  aria-label="Close modal"
+                >
+                  <i class="fa-solid fa-xmark"></i>
+                </button>
+
+              </div>
+
+
+              <!-- Body -->
+                <div class="service-modal-body">
+                  
+
+                  <!-- Service Date -->
+                  <div class="service-form-group">
+                    <label for="serviceDate">
+                      Service Date
+                    </label>
+
+                    <div class="service-input-icon">
+                      <i class="fa-regular fa-calendar"></i>
+
+                      <input
+                        type="date"
+                        id="serviceDate"
+                        name="serviceDate"
+                      >
+                    </div>
+                  </div>
+
+
+                  <!-- Service Rendered -->
+                  <div class="service-form-group">
+
+                    <label for="serviceRendered">
+                      Service Rendered
+                    </label>
+
+                    <textarea
+                      id="serviceRendered"
+                      name="serviceRendered"
+                      rows="3"
+                      placeholder="Describe the dental service performed..."
+                    ></textarea>
+
+                  </div>
+
+
+                  <!-- Patient Acknowledgment -->
+                  <div class="service-form-group">
+
+                    <label for="patientSignature">
+                      Patient's Signature
+                    </label>
+
+                    <div class="signature-pad-wrapper">
+                        <canvas id="patientSignature"></canvas>
+                    </div>
+
+                    <div class="signature-actions">
+                        <button
+                            type="button"
+                            id="clearPatientSignature"
+                            class="signature-clear-button"
+                        >
+                            <i class="fa-solid fa-eraser"></i>
+                            Clear
+                        </button>
+                    </div>
+
+                  </div>
+
+
+                  <!-- Dentist -->
+                  <div class="service-form-group">
+
+                    <label for="dentistSignature">
+                      Dentist
+                    </label>
+
+                    <div class="service-readonly-field">
+
+                      <i class="fa-solid fa-user-doctor"></i>
+
+                      <span id="serviceDentistName">
+                        Current dentist
+                      </span>
+
+                      <span class="auto-label">
+                        Automatic
+                      </span>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+              <!-- Footer -->
+              <div class="service-modal-footer">
+
+                <button
+                  type="button"
+                  class="secondary-button"
+                  data-close-service-modal
+                >
+                  Cancel
+                </button>
+
+                <button
+                  type="button"
+                  class="primary-button"
+                  id="saveServiceBtn"
+                >
+                  <i class="fa-solid fa-check"></i>
+                  Save Service
+                </button>
+
+              </div>
+
+            </div>
+          </div>
+
     </section>
 </div>
 
+
+<!-- VIEW MODAL-->
+<div class="modal-overlay" id="openDocumentPreview">
+  <div class="document-modal">
+
+    <div class="document-toolbar">
+      <div class="toolbar-title">Document Preview</div>
+      <div class="toolbar-actions">
+        <button class="toolbar-btn" type="button" id="downloadDocument">
+          <span class="icon">&#8681;</span>
+          <span class="btn-label">Download</span>
+        </button>
+
+        <button class="toolbar-btn" type="button" id="printDocument">
+          <span class="icon">&#128438;</span>
+          <span class="btn-label">Print</span>
+        </button>
+
+        <button class="toolbar-btn" type="button" id="closeDocument">
+          <span class="icon">X</span>
+          <span class="btn-label">Close</span>
+        </button>
+      </div>
+    </div>
+
+    <div class="document-scroll">
+
+      <div class="document">
+      
+        <!-- ============ PAGE 1 ============ -->
+        <div class="document-page-wrapper">
+          <div class="document-page">
+
+            <header class="doc-header">
+              <div class="seal">
+                <div class="seal-circle">
+                  <img src="<?= BASE_URL ?>assets/images/SLSU-LOGO.png" alt="slsu-logo">
+                </div>
+              </div>
+              <div class="header-text">
+                <p class="republic">Republic of the Philippines</p>
+                <h1 class="university">SOUTHERN LUZON STATE UNIVERSITY</h1>
+                <p class="uhs">University Health Services (UHS)</p>
+                <p class="location">Lucban, Quezon</p>
+              </div>
+            </header>
+
+            <h2 class="doc-title">MEDICAL RECORD</h2>
+
+            <section class="field-block">
+              <div class="line-row">
+                <span class="line-label">NAME:</span>
+                <span class="dotted-fill" style="display: flex;">
+                  <span style="flex: 1; text-align: center;" id="documentLastName"></span>
+                  <span style="flex: 1; text-align: center;" id="documentFirstName"></span>
+                  <span style="flex: 1; text-align: center;" id="documentMiddleName"></span>
+                </span>
+              </div>
+              <div class="sub-labels three-col">
+                <span>Family Name</span>
+                <span>Given Name</span>
+                <span>Middle Name</span>
+              </div>
+
+              <div class="line-row three-part">
+                <span class="line-label">BIRTHDAY:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentBirthday"></span>
+                <span class="line-label mid">AGE:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentAge"></span>
+                <span class="line-label mid">SEX:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentSex"></span>
+              </div>
+
+              <div class="line-row three-part">
+                <span class="line-label">CIVIL STATUS:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentCivilStatus"></span>
+                <span class="line-label mid">RELIGION:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentReligion"></span>
+                <span class="line-label mid">NATIONALITY:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentNationality"></span>
+              </div>
+
+              <div class="line-row two-part">
+                <span class="line-label">COLLEGE/DEPT.:</span>
+                <span class="dotted-fill short document-value" style="text-align: center;" id="documentDept"></span>
+                <span class="line-label mid">JOB POSITION/ COURSE:</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentCourse"></span>
+              </div>
+
+              <div class="line-row two-part">
+                <span class="line-label">HOME ADDRESS:</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentAddress"></span>
+                <span class="line-label mid">TEL. NO.:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentTelNo"></span>
+              </div>
+
+              <div class="emergency-block">
+                <span class="line-label emergency-label">In case of emergency, Please notify:</span>
+                <div class="emergency-lines">
+                  <div class="line-row">
+                    <span class="line-label">Mr. /Mrs.</span>
+                    <span class="dotted-fill" style="text-align: center;" id="documentGuardian"></span>
+                  </div>
+                  <div class="line-row">
+                    <span class="line-label">At</span>
+                    <span class="dotted-fill" style="text-align: center;" id="documentGuardianAdrress"></span>
+                  </div>
+                  <div class="line-row">
+                    <span class="line-label">Tel No.</span>
+                    <span class="dotted-fill" style="text-align: center;" id="documentGuardianTelNo"></span>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <h3 class="section-heading centered">PHYSICAL EXAMINATION</h3>
+
+            <section class="field-block">
+              <div class="line-row four-part">
+                <span class="line-label">Blood Pressure:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentBloodPressure"></span>
+                <span class="line-label mid">Temp.:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentTemp"></span>
+                <span class="line-label mid">Pulse Rate:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentPulseRate"></span>
+                <span class="line-label mid">Resp. Rate:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentRespRate"></span>
+              </div>
+              <div class="line-row four-part">
+                <span class="line-label">Height:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentHeight"></span>
+                <span class="line-label mid">Ft. Weight:</span>
+                <span class="dotted-fill short" style="text-align: center;" id="documentWeight"></span>
+                <span class="line-label mid">Kg. Ideal Body Weight:</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentIdealWeight"></span>
+              </div>
+
+              <div class="line-row">
+                <span class="line-label">HEAD / NECK :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentHeadNeck"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">RESPIRATORY :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentResp"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">CARDIO-VASCULAR :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentCardioVascular"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">GASTRO-INTESTINAL :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentGastroInternal"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">GENITO-URINARY :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentGastroUrinary"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">EXTREMITIES :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentExtremities"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">NEUROLOGIC :</span>
+                <span class="dotted-fill" style="text-align: center;" id="documentNeurologic"></span>
+              </div>
+            </section>
+
+            <section class="two-column-block">
+              <div class="col">
+                <p class="col-heading">DIAGNOSIS / TREATMENT / SUGGESTIONS:</p>
+
+                <div class="paragraph-lines" id="diagnosisText"></div>
+              </div>
+
+              <div class="col">
+                <p class="col-heading">LABORATORY:</p>
+
+                <div class="paragraph-lines" id="laboratoryText"></div>
+              </div>
+            </section>
+
+            <h3 class="section-heading">PAST MEDICAL / FAMILY HISTORY</h3>
+
+            <section class="checklist-grid">
+              <div class="check-col">
+                <div class="check-row">
+                  <span>Hypertension</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Hypertension"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Heart Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Heart Disease"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Asthma</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Asthma"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Lung Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Lung Disease"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Malignancy</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Malignancy"></span>&nbsp;)</span>
+                </div>
+              </div>
+              <div class="check-col">
+                <div class="check-row">
+                  <span>Allergy</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Allergy"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Goiter</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Goiter"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Diabetes</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Diabetes"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Bleeding Tendency</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Bleeding Tendency"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Hernia</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Hernia"></span>&nbsp;)</span>
+                </div>
+              </div>
+              <div class="check-col">
+                <div class="check-row">
+                  <span>Liver Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Liver Disease"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Gall Bladder Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Gall Bladder Disease"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Ulcer</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Ulcer"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Renal Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Renal Disease"></span>&nbsp;)</span>
+                </div>
+                <div class="check-row">
+                  <span>Immune Disease</span>
+                  <span class="paren">(&nbsp;<span class="document-history" id="Immune Disease"></span>&nbsp;)</span>
+                </div>
+              </div>
+            </section>
+
+            <section class="field-block others-block">
+              <p class="others-heading">Others:</p>
+              <div class="line-row">
+                <span class="line-label">Previous Hospitalization</span>
+                <span class="line-label colon">:</span>
+                <span class="dotted-fill" id="documentPrevHospitalization"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">Previous Operation</span>
+                <span class="line-label colon">:</span>
+                <span class="dotted-fill" id="documentPrevOperation"></span>
+              </div>
+              <div class="line-row">
+                <span class="line-label">Previous Trauma</span>
+                <span class="line-label colon">:</span>
+                <span class="dotted-fill" id="documentPrevTrauma"></span>
+              </div>
+
+              <div class="history-of-row">
+                <span class="line-label history-label">
+                  History of<br>
+                  <span class="indent">Smoking</span>
+                </span>
+                  <span class="paren wide">(&nbsp;<span class="document-social-history" id="Smoking"></span>&nbsp;)
+                  </span>
+                <span class="line-label mid">Alcoholism</span>
+                <span class="paren wide">(&nbsp;<span class="document-social-history" id="Alcoholism"></span>&nbsp;)</span>
+                <span class="line-label mid">Sports:</span>
+                <span class="dotted-fill short" id="documentSportDefinition" style="text-align: center;"></span>
+              </div>
+            </section>
+
+            <footer class="signature-footer">
+              <div class="sig-line"></div>
+              <div class="sig-name">Ma. Genevieve L. Cuarto, MD</div>
+            </footer>
+
+          </div>
+        </div>
+
+        <div class="page-gap"></div>
+
+        <!-- ============ PAGE 2 ============ -->
+        <div class="document-page-wrapper">
+          <div class="document-page page-two">
+
+            <div class="page2-top">
+              <div class="legend-block">
+                <p class="legend-title">Legend:</p>
+                <table class="legend-table">
+                  <tr>
+                    <td>C</td>
+                    <td>-</td>
+                    <td>Dental Caries</td>
+                  </tr>
+
+                  <tr>
+                    <td>C1</td>
+                    <td>-</td>
+                    <td>Dental Caries with Vital<br>Pulp Exposed</td>
+                  </tr>
+
+                  <tr>
+                    <td>C2</td>
+                    <td>-</td>
+                    <td>Dental Caries with<br>Non-Vital Pulp Exposed</td>
+                  </tr>
+
+                  <tr>
+                    <td>X</td>
+                    <td>-</td>
+                    <td>Indicated for Extraction</td>
+                  </tr>
+
+                  <tr>
+                    <td>RF</td>
+                    <td>-</td>
+                    <td>Retained Root Fragment</td>
+                  </tr>
+
+                  <tr>
+                    <td>AM</td>
+                    <td>-</td>
+                    <td>Amalgam Filling</td>
+                  </tr>
+
+                  <tr>
+                    <td>S</td>
+                    <td>-</td>
+                    <td>Silicate Filling</td>
+                  </tr>
+                  
+                  <tr>
+                    <td>GC</td>
+                    <td>-</td>
+                    <td>Gold Crown</td>
+                  </tr>
+
+                  <tr>
+                    <td>AB</td>
+                    <td>-</td>
+                    <td>Bridge Abutment</td>
+                  </tr>
+
+                  <tr>
+                    <td>P</td>
+                    <td>-</td>
+                    <td>Pontic</td>
+                  </tr>
+
+                  <tr>
+                    <td>U</td>
+                    <td>-</td>
+                    <td>Gold Clasp</td>
+                  </tr>
+
+                  <tr>
+                    <td>GI</td>
+                    <td>-</td>
+                    <td>Gold Inlay</td>
+                  </tr>
+
+                  <tr>
+                    <td>M</td>
+                    <td>-</td>
+                    <td>Missing due to Extraction</td>
+                  </tr>
+
+                  <tr>
+                    <td>Un</td>
+                    <td>-</td>
+                    <td>Unerupted</td>
+                  </tr>
+                </table>
+              </div>
+
+              <div class="dental-chart-block">
+                <h2 class="dental-title">DENTAL RECORD</h2>
+
+                <div class="dental-block">
+                  <div class="side-labels">
+                    <span class="side-label right">
+                      LEFT<br>UPPER
+                    </span>
+                    <span class="side-label right">
+                      LEFT<br>LOWER
+                    </span>
+                  </div>
+
+                  <div class="teeth-block">
+                    <div class="teeth-block-upper">
+                      <div class="tooth-field-row">
+                        <div class="teeth-block-content" id="t1"></div>
+                        <div class="teeth-block-content" id="t2"></div>
+                        <div class="teeth-block-content" id="t3"></div>
+                        <div class="teeth-block-content" id="t4"></div>
+                        <div class="teeth-block-content" id="t5"></div>
+                        <div class="teeth-block-content" id="t6"></div>
+                        <div class="teeth-block-content" id="t7"></div>
+                        <div class="teeth-block-content" id="t8"></div>
+                        <div class="teeth-block-content" id="t9"></div>
+                        <div class="teeth-block-content" id="t10"></div>
+                        <div class="teeth-block-content" id="t11"></div>
+                        <div class="teeth-block-content" id="t12"></div>
+                        <div class="teeth-block-content" id="t13"></div>
+                        <div class="teeth-block-content" id="t14"></div>
+                        <div class="teeth-block-content" id="t15"></div>
+                        <div class="teeth-block-content" id="t16"></div>
+                      </div>
+                      <div class="tooth-row upper-row">
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                      </div>
+                    </div>
+
+                    <div class="teeth-block-lower">
+                      <div class="tooth-field-row">
+                        <div class="teeth-block-content" id="t32"></div>
+                        <div class="teeth-block-content" id="t31"></div>
+                        <div class="teeth-block-content" id="t30"></div>
+                        <div class="teeth-block-content" id="t29"></div>
+                        <div class="teeth-block-content" id="t28"></div>
+                        <div class="teeth-block-content" id="t27"></div>
+                        <div class="teeth-block-content" id="t26"></div>
+                        <div class="teeth-block-content" id="t25"></div>
+                        <div class="teeth-block-content" id="t24"></div>
+                        <div class="teeth-block-content" id="t23"></div>
+                        <div class="teeth-block-content" id="t22"></div>
+                        <div class="teeth-block-content" id="t21"></div>
+                        <div class="teeth-block-content" id="t20"></div>
+                        <div class="teeth-block-content" id="t19"></div>
+                        <div class="teeth-block-content" id="t18"></div>
+                        <div class="teeth-block-content" id="t17"></div>
+                      </div>
+                      <div class="tooth-row lower-row">
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                        <span class="tooth">
+                          <img
+                              src="<?= BASE_URL ?>assets/svg/tooth.svg"
+                              alt="Tooth"
+                              height=18
+                              width=18
+                          >
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+
+                  <div class="side-labels lower-side">
+                    <span class="side-label left">
+                      RIGHT<br>UPPER
+                    </span>
+                    <span class="side-label left">
+                      RIGHT<br>LOWER
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <h3 class="section-heading centered">TREATMENT PLAN</h3>
+
+            <table class="treatment-plan-table">
+              <tr>
+                <td class="tp-label">Oral Surgery Clinic</td>
+                <td class="document-treatment-plan" id="oral_surgery"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Operative Clinic</td>
+                <td class="document-treatment-plan" id="operative"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Prosthodontia Clinic</td>
+                <td class="document-treatment-plan" id="prosthodontia"></td>
+              </tr>
+              
+              <tr>
+                <td class="tp-label">Crown &amp; Bridge Clinic</td>
+                <td class="document-treatment-plan" id="crown_bridge"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Oral Medicine Clinic</td>
+                <td class="document-treatment-plan" id="oral_medicine"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">X-Ray Clinic</td>
+                <td class="document-treatment-plan" id="x_ray"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Children's Clinic</td>
+                <td class="document-treatment-plan" id="children"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Orthodontia Clinic</td>
+                <td class="document-treatment-plan" id="orthodontia"></td>
+              </tr>
+
+              <tr>
+                <td class="tp-label">Clinical Laboratory</td>
+                <td class="document-treatment-plan" id="clinical_lab"></td>
+              </tr>
+            </table>
+
+            <table class="services-table">
+              <thead>
+                <tr>
+                  <th class="col-date">DATE</th>
+                  <th class="col-services">SERVICES RENDERED</th>
+                  <th class="col-sig">Patient's Signature</th>
+                  <th class="col-sig">Dentist's Signature</th>
+                </tr>
+              </thead>
+              <tbody class="document-services-body">
+                <tr data-service-row="0">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="1">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="2">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="3">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="4">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="5">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="6">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="7">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="8">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="9">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="10">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="11">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="12">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="13">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="14">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="15">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="16">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="17">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="18">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+                <tr data-service-row="19">
+                  <td class="service-date"></td>
+                  <td class="service-rendered"></td>
+                  <td class="service-patient-signature"></td>
+                  <td class="service-dentist-signature"></td>
+                </tr>
+
+
+              </tbody>
+            </table>
+
+            <footer class="page2-footer">
+              <p class="examined-by">Examined by:</p>
+              <div class="sig-line dentist-sig"></div>
+              <div class="sig-name">Edwin D. Elma, D.M.D.</div>
+              <div class="sig-role">Dentist</div>
+
+              <div class="footer-bottom-row">
+                <span class="form-code">AFA-UHS-1.01.F4</span>
+                <span class="page-number">Page 2 of 2</span>
+              </div>
+            </footer>
+
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+<script>
+  window.BASE_URL = <?= json_encode(BASE_URL) ?>;
+  window.API_URL = <?= json_encode(API_URL) ?>;
+</script>
 
 <script src="<?= BASE_URL ?>assets/js/components/modal.js"></script>
 <script src="<?= BASE_URL ?>assets/js/patients/index.js" type="module"></script>

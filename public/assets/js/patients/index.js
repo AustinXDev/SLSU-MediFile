@@ -1,6 +1,8 @@
 import { patientEvents } from "./components/patientEvents.js";
+import { serviceEvents } from "./components/serviceEvents.js";
 import { patientData } from "./components/patientData.js";
 import { patientTable } from "./components/patientTable.js";
+import { fitDocumentPages } from "./components/fitDocumentsPages.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -17,6 +19,7 @@ async function init() {
     await patientData.load();
 
     patientEvents.bind();
+    serviceEvents.init();
     patientTable.render();
   } catch (error) {
     console.error("Unable to load patient records:", error);
@@ -31,3 +34,4 @@ if (document.readyState === "loading") {
 
 window.openSidebar = openSidebar;
 window.closeSidebar = closeSidebar;
+window.addEventListener("resize", fitDocumentPages);

@@ -1,5 +1,7 @@
 <?php
 
+require_once __DIR__ . '/../config/init.php';
+
 use App\Middleware\AdminMiddleware;
 use App\Session\SessionManager;
 
@@ -20,6 +22,7 @@ $middleware->requireAuth();
 
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
 </head>
 
@@ -88,16 +91,6 @@ $middleware->requireAuth();
             </a>
 
             <a href="#" class="nav-item">
-                <span class="nav-icon"><i class="fa-solid fa-file-medical"></i></span>
-                <span>Medical Records</span>
-            </a>
-
-            <a href="#" class="nav-item">
-                <span class="nav-icon"><i class="fa-solid fa-calendar-check"></i></span>
-                <span>Appointments</span>
-            </a>
-
-            <a href="#" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-nurse"></i></span>
                 <span>Users / Staff</span>
             </a>
@@ -133,27 +126,6 @@ $middleware->requireAuth();
                 <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                 <span>Logout</span>
             </a>
-
-        </div>
-
-        <div 
-          style="
-            position: relative; 
-            height: 150px; 
-            overflow: hidden;
-          ">
-
-          <img 
-            height="100%" 
-            width="100%" 
-            style="
-              filter:contrast(80%); 
-              opacity: 0.1;
-              object-fit: cover;
-              transform: scale(1.1);" 
-            src="<?= BASE_URL ?>assets/images/SLSU-SCHOOL.png" 
-            alt="SLSU-SCHOOL"
-          >
 
         </div>
 
@@ -272,11 +244,35 @@ $middleware->requireAuth();
 
                     <p>Total Patients</p>
 
-                    <h3>12,480</h3>
+                    <h3 id="totalPatient">0</h3>
 
-                    <div class="stat-change positive">
-                        ↑ 8.2%
-                        <span>vs last month</span>
+                    <div id="totalPatientChange" class="stat-change">
+                        <span class="stat-change-value"></span>
+                        <span class="stat-change-label">vs last month</span>
+                    </div>
+
+                </article>
+                
+                <!-- Users -->
+                <article class="stat-card">
+
+                    <div class="stat-top">
+
+                        <div class="stat-icon green">
+                            <i class="fa-solid fa-user-doctor"></i>
+                        </div>
+
+                        <button>•••</button>
+
+                    </div>
+
+                    <p>Total Staffs</p>
+
+                    <h3 id="totalStaffs">0</h3>
+
+                    <div id="totalStaffChange" class="stat-change">
+                        <span class="stat-change-value"></span>
+                        <span class="stat-change-label">vs last month</span>
                     </div>
 
                 </article>
@@ -297,11 +293,11 @@ $middleware->requireAuth();
 
                     <p>Active Medical Records</p>
 
-                    <h3>10,284</h3>
+                    <h3 id="totalActiveRecords">0</h3>
 
-                    <div class="stat-change positive">
-                        ↑ 5.4%
-                        <span>vs last month</span>
+                    <div id="totalActiveChange" class="stat-change">
+                        <span class="stat-change-value"></span>
+                        <span class="stat-change-label">vs last month</span>
                     </div>
 
                 </article>
@@ -320,38 +316,38 @@ $middleware->requireAuth();
 
                     </div>
 
-                    <p>Today's Appointments</p>
+                    <p>Today's Services</p>
 
-                    <h3>24</h3>
+                    <h3 id="totalServices">0</h3>
 
-                    <div class="stat-change positive">
-                        ↑ 12.1%
-                        <span>vs yesterday</span>
+                    <div id="totalServiceChange" class="stat-change">
+                        <span class="stat-change-value"></span>
+                        <span class="stat-change-label">vs yesterday</span>
                     </div>
 
                 </article>
 
 
-                <!-- Staff -->
+                <!-- Dental -->
                 <article class="stat-card">
 
                     <div class="stat-top">
 
                         <div class="stat-icon emerald">
-                            <i class="fa-solid fa-user-nurse"></i>
+                            <i class="fa-solid fa-tooth"></i>
                         </div>
 
                         <button>•••</button>
 
                     </div>
 
-                    <p>Registered Staff</p>
+                    <p>Dental Services</p>
 
-                    <h3>186</h3>
+                    <h3 id="totalDentalServices">0</h3>
 
-                    <div class="stat-change positive">
-                        ↑ 3.8%
-                        <span>vs last month</span>
+                    <div id="totalDentalChange" class="stat-change">
+                        <span class="stat-change-value"></span>
+                        <span class="stat-change-label">vs last month</span>
                     </div>
 
                 </article>
@@ -386,15 +382,25 @@ $middleware->requireAuth();
 
                         <div class="chart-filter">
 
-                            <button class="active">
+                            <button
+                                type="button"
+                                class="active"
+                                data-period="weekly"
+                            >
                                 Weekly
                             </button>
 
-                            <button>
+                            <button
+                                type="button"
+                                data-period="monthly"
+                            >
                                 Monthly
                             </button>
 
-                            <button>
+                            <button
+                                type="button"
+                                data-period="yearly"
+                            >
                                 Yearly
                             </button>
 
@@ -405,7 +411,7 @@ $middleware->requireAuth();
 
                     <div class="chart">
 
-                        <div class="chart-y-axis">
+                        <div id="chartYAxis" class="chart-y-axis">
                             <span>1,000</span>
                             <span>800</span>
                             <span>600</span>
@@ -425,6 +431,7 @@ $middleware->requireAuth();
 
 
                             <svg
+                                id="patientActivityChart"
                                 class="chart-svg"
                                 viewBox="0 0 700 260"
                                 preserveAspectRatio="none"
@@ -457,48 +464,14 @@ $middleware->requireAuth();
                                 </defs>
 
 
-                                <path
-                                    class="chart-fill"
-                                    d="
-                                        M0,190
-                                        C45,170 70,185 105,145
-                                        C140,105 160,135 205,110
-                                        C245,85 265,105 305,65
-                                        C350,25 370,70 415,52
-                                        C460,35 480,80 520,65
-                                        C560,45 590,80 625,40
-                                        C660,15 680,35 700,20
-                                        L700,260
-                                        L0,260
-                                        Z
-                                    "
-                                />
+                                <path class="chart-fill"></path>
 
-                                <path
-                                    class="chart-line"
-                                    d="
-                                        M0,190
-                                        C45,170 70,185 105,145
-                                        C140,105 160,135 205,110
-                                        C245,85 265,105 305,65
-                                        C350,25 370,70 415,52
-                                        C460,35 480,80 520,65
-                                        C560,45 590,80 625,40
-                                        C660,15 680,35 700,20
-                                    "
-                                />
+                                <path class="chart-line"></path>
 
                             </svg>
 
 
-                            <div class="chart-days">
-                                <span>Mon</span>
-                                <span>Tue</span>
-                                <span>Wed</span>
-                                <span>Thu</span>
-                                <span>Fri</span>
-                                <span>Sat</span>
-                                <span>Sun</span>
+                            <div id="chartDays" class="chart-days">
                             </div>
 
                         </div>
@@ -514,8 +487,8 @@ $middleware->requireAuth();
                         </span>
 
                         <span>
-                            <strong>7,420</strong>
-                            total this week
+                            <strong id="activityTotal">0</strong>
+                            <span id="activityLabel">total this week</span>
                         </span>
 
                     </div>
@@ -536,7 +509,7 @@ $middleware->requireAuth();
 
                             <div>
                                 <h3>Medical Records Overview</h3>
-                                <p>Current record distribution</p>
+                                <p>Current medical record status</p>
                             </div>
 
                         </div>
@@ -546,74 +519,70 @@ $middleware->requireAuth();
 
                     <div class="record-list">
 
+                        <!-- New Records -->
                         <div class="record-item">
 
                             <div class="record-info">
-                                <span>New Records</span>
-                                <strong>1,254</strong>
+                                <span>New This Month</span>
+                                <strong id="newRecords">0</strong>
                             </div>
 
                             <div class="progress">
-                                <span
-                                    style="width: 28%"
-                                ></span>
+                                <span id="newRecordsProgress"></span>
                             </div>
 
-                            <small>28%</small>
+                            <small id="newRecordsPercent">0%</small>
 
                         </div>
 
 
+                        <!-- Updated Records -->
                         <div class="record-item">
 
                             <div class="record-info">
-                                <span>Updated Records</span>
-                                <strong>3,482</strong>
+                                <span>Updated This Month</span>
+                                <strong id="updatedRecords">0</strong>
                             </div>
 
                             <div class="progress">
-                                <span
-                                    style="width: 39%"
-                                ></span>
+                                <span id="updatedRecordsProgress"></span>
                             </div>
 
-                            <small>39%</small>
+                            <small id="updatedRecordsPercent">0%</small>
 
                         </div>
 
 
+                        <!-- Complete Records -->
                         <div class="record-item">
 
                             <div class="record-info">
-                                <span>Pending Records</span>
-                                <strong>1,026</strong>
+                                <span>Medical Examinations</span>
+                                <strong id="medicalRecords">0</strong>
+                            </div>
+
+                            <div class="progress">
+                                <span id="medicalRecordsProgress"></span>
+                            </div>
+
+                            <small id="medicalRecordsPercent">0%</small>
+
+                        </div>
+
+
+                        <!-- Incomplete Records -->
+                        <div class="record-item">
+
+                            <div class="record-info">
+                                <span>Dental Records</span>
+                                <strong id="dentalRecords">0</strong>
                             </div>
 
                             <div class="progress pending">
-                                <span
-                                    style="width: 15%"
-                                ></span>
+                                <span id="dentalRecordsProgress"></span>
                             </div>
 
-                            <small>15%</small>
-
-                        </div>
-
-
-                        <div class="record-item">
-
-                            <div class="record-info">
-                                <span>Archived Records</span>
-                                <strong>4,522</strong>
-                            </div>
-
-                            <div class="progress archived">
-                                <span
-                                    style="width: 18%"
-                                ></span>
-                            </div>
-
-                            <small>18%</small>
+                            <small id="incompleteRecordsPercent">0%</small>
 
                         </div>
 
@@ -624,7 +593,7 @@ $middleware->requireAuth();
 
                         <span>Total Records</span>
 
-                        <strong>10,284</strong>
+                        <strong id="totalMedicalRecords">0</strong>
 
                     </div>
 
@@ -669,150 +638,15 @@ $middleware->requireAuth();
                         <table>
 
                             <thead>
-
                                 <tr>
                                     <th>STAFF</th>
                                     <th>ACTIVITY</th>
                                     <th>DATE & TIME</th>
                                     <th>STATUS</th>
                                 </tr>
-
                             </thead>
 
-
-                            <tbody>
-
-                                <tr>
-
-                                    <td>
-                                        <div class="user-cell">
-
-                                            <div class="user-avatar pink">
-                                                MS
-                                            </div>
-
-                                            <span>
-                                                Dr. Maria Santos
-                                            </span>
-
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        Updated patient medical record
-                                    </td>
-
-                                    <td>
-                                        May 22, 2025 · 10:24 AM
-                                    </td>
-
-                                    <td>
-                                        <span class="status completed">
-                                            Completed
-                                        </span>
-                                    </td>
-
-                                </tr>
-
-
-                                <tr>
-
-                                    <td>
-                                        <div class="user-cell">
-
-                                            <div class="user-avatar blue">
-                                                JD
-                                            </div>
-
-                                            <span>
-                                                Juan Dela Cruz
-                                            </span>
-
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        Added new patient
-                                    </td>
-
-                                    <td>
-                                        May 22, 2025 · 09:15 AM
-                                    </td>
-
-                                    <td>
-                                        <span class="status completed">
-                                            Completed
-                                        </span>
-                                    </td>
-
-                                </tr>
-
-
-                                <tr>
-
-                                    <td>
-                                        <div class="user-cell">
-
-                                            <div class="user-avatar purple">
-                                                AR
-                                            </div>
-
-                                            <span>
-                                                Angela Reyes
-                                            </span>
-
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        Generated medical report
-                                    </td>
-
-                                    <td>
-                                        May 22, 2025 · 08:40 AM
-                                    </td>
-
-                                    <td>
-                                        <span class="status completed">
-                                            Completed
-                                        </span>
-                                    </td>
-
-                                </tr>
-
-
-                                <tr>
-
-                                    <td>
-                                        <div class="user-cell">
-
-                                            <div class="user-avatar orange">
-                                                AS
-                                            </div>
-
-                                            <span>
-                                                Admin Support
-                                            </span>
-
-                                        </div>
-                                    </td>
-
-                                    <td>
-                                        Updated staff information
-                                    </td>
-
-                                    <td>
-                                        May 21, 2025 · 04:35 PM
-                                    </td>
-
-                                    <td>
-                                        <span class="status completed">
-                                            Completed
-                                        </span>
-                                    </td>
-
-                                </tr>
-
+                            <tbody id="recentActivityBody">
                             </tbody>
 
                         </table>
@@ -822,7 +656,7 @@ $middleware->requireAuth();
                 </article>
 
 
-                <!-- Appointments -->
+                <!-- Recent Patient Records -->
                 <article class="card table-card">
 
                     <div class="card-header">
@@ -830,119 +664,44 @@ $middleware->requireAuth();
                         <div class="card-title">
 
                             <div class="title-icon">
-                                <i class="fa-solid fa-calendar-check"></i>
+                                <i class="fa-solid fa-user-plus"></i>
                             </div>
 
                             <div>
-                                <h3>Upcoming Appointments</h3>
-                                <p>Today's scheduled appointments</p>
+                                <h3>Recent Patient Records</h3>
+                                <p>Latest patients added to the system</p>
                             </div>
 
                         </div>
 
-                        <button class="view-button">
+                        <button
+                            type="button"
+                            class="view-button"
+                            id="viewPatients"
+                        >
                             View All
                         </button>
 
                     </div>
 
 
-                    <div class="appointment-list">
+                    <div class="recent-table-wrapper">
 
-                        <div class="appointment">
+                        <table>
 
-                            <div class="appointment-time">
-                                <strong>09:30</strong>
-                                <span>AM</span>
-                            </div>
+                            <thead>
+                                <tr>
+                                    <th>PATIENT</th>
+                                    <th>DEPARTMENT</th>
+                                    <th>DATE ADDED</th>
+                                </tr>
+                            </thead>
 
-                            <div class="appointment-details">
+                            <tbody id="recentPatientsBody">
+                                <!-- Patient records rendered by JavaScript -->
+                            </tbody>
 
-                                <strong>Anna Reyes</strong>
-
-                                <span>
-                                    Dr. Maria Santos
-                                </span>
-
-                            </div>
-
-                            <span class="status completed">
-                                Confirmed
-                            </span>
-
-                        </div>
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                <strong>10:15</strong>
-                                <span>AM</span>
-                            </div>
-
-                            <div class="appointment-details">
-
-                                <strong>John Dela Cruz</strong>
-
-                                <span>
-                                    Dr. James Wilson
-                                </span>
-
-                            </div>
-
-                            <span class="status completed">
-                                Confirmed
-                            </span>
-
-                        </div>
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                <strong>01:00</strong>
-                                <span>PM</span>
-                            </div>
-
-                            <div class="appointment-details">
-
-                                <strong>Linda Garcia</strong>
-
-                                <span>
-                                    Dr. Maria Santos
-                                </span>
-
-                            </div>
-
-                            <span class="status pending-status">
-                                Pending
-                            </span>
-
-                        </div>
-
-
-                        <div class="appointment">
-
-                            <div class="appointment-time">
-                                <strong>02:30</strong>
-                                <span>PM</span>
-                            </div>
-
-                            <div class="appointment-details">
-
-                                <strong>Michael Johnson</strong>
-
-                                <span>
-                                    Dr. James Wilson
-                                </span>
-
-                            </div>
-
-                            <span class="status completed">
-                                Confirmed
-                            </span>
-
-                        </div>
+                        </table>
 
                     </div>
 
@@ -1004,6 +763,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 </script>
+
+<script src="<?= BASE_URL ?>assets/js/dashboard/index.js" type="module"></script>
 
 </body>
 </html>

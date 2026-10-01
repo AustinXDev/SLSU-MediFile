@@ -4,12 +4,14 @@ require_once __DIR__ . '/../../config/init.php';
 
 use App\Repositories\AdminRepository;
 use App\Repositories\LoginAttemptRepository;
+use App\Repositories\LogRepositories\LogRepository;
 use App\Repositories\TwoFactorRepository;
 use App\Services\Auth\Login\LoginService;
 use App\Services\Auth\Login\LoginRateLimiter;
 use App\Services\Auth\TwoFactor\TwoFactorService;
 use App\Controllers\Auth\LoginController\LoginController;
 use App\Session\SessionManager;
+use App\Services\Logs\LogsService;
 use App\Provider\Mailer;
 
 header('Content-Type: application/json');
@@ -70,6 +72,8 @@ try {
 
     $twoFactorRepo = new TwoFactorRepository($pdo);
 
+    $logsRepo = new LogRepository($pdo);
+
 
     /**
      * Login rate limiter
@@ -99,6 +103,11 @@ try {
      */
     $sessionManager = new SessionManager();
 
+    /**
+     * Logs Service
+     */
+    $logService = new LogsService($logsRepo);
+
 
     /**
      * Login service
@@ -107,7 +116,8 @@ try {
         $adminRepo,
         $rateLimiter,
         $twoFactorService,
-        $sessionManager
+        $sessionManager,
+        $logService
     );
 
 

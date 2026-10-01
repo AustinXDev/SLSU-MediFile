@@ -10,3 +10,5 @@ use Dotenv\Dotenv;
 
 $dotenv = Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
+
+define('API_URL', $_ENV['API_URL']);

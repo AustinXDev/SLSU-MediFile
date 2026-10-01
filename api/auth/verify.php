@@ -6,10 +6,12 @@ use App\Repositories\AdminRepository;
 use App\Services\Auth\Login\LoginRateLimiter;
 use App\Repositories\LoginAttemptRepository;
 use App\Repositories\TwoFactorRepository;
+use App\Repositories\LogRepositories\LogRepository;
 use App\Services\Auth\TwoFactor\TwoFactorService;
 use App\Services\Auth\Login\LoginService;
 use App\Controllers\Auth\LoginController\LoginController;
 use App\Session\SessionManager;
+use App\Services\Logs\LogsService;
 use App\Provider\Mailer;
 
 header('Content-type: application/json');
@@ -33,6 +35,7 @@ try {
     $adminRepo = new AdminRepository($pdo);
     $attemptsRepo = new LoginAttemptRepository($pdo);
     $twoFactorRepo = new TwoFactorRepository($pdo);
+    $logsRepo = new LogRepository($pdo);
 
     $rateLimiter = new LoginRateLimiter($attemptsRepo);
 
@@ -42,13 +45,14 @@ try {
      * Services
      */
     $twoFactorService = new TwoFactorService($adminRepo, $twoFactorRepo, $mailer);
+    $logService = new LogsService($logsRepo);
 
     /**
      * Session Manager
      */
     $sessionManager = new SessionManager();
 
-    $service = new LoginService($adminRepo, $rateLimiter, $twoFactorService, $sessionManager);
+    $service = new LoginService($adminRepo, $rateLimiter, $twoFactorService, $sessionManager, $logService);
 
     /**
      * Controllers

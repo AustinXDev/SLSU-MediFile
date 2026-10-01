@@ -58,10 +58,17 @@ class PatientRepository
         $patients = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         foreach ($patients as &$patient) {
+
+            $dentalId = !empty($patient['dental_id'])
+                ? (int) $patient['dental_id']
+                : null;
+
             $patient['treatmentPlan'] = $this->getTreatmentPlan(
-                !empty($patient['dental_id'])
-                    ? (int) $patient['dental_id']
-                    : null
+                $dentalId
+            );
+
+            $patient['dentalServices'] = $this->getDentalService(
+                $dentalId
             );
         }
 
@@ -223,5 +230,34 @@ class PatientRepository
 
         return $treatmentPlan;
     }
+
+
+    private function getDentalService(
+        ?int $dentalId
+    ): array {
+
+        if (!$dentalId) {
+            return [];
+        }
+
+        $sql = '
+
+        SELECT 
+            service_id AS serviceId,
+            service_date AS serviceDate,
+            service_rendered AS serviceRendered,
+            patient_signature_path AS signaturePath
+
+        FROM patient_dental_services
+        WHERE dental_id = ?
+        ORDER BY service_id DESC
+    ';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute([$dentalId]);
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+
 
 }

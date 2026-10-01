@@ -16,6 +16,13 @@ final class AdminMiddleware
 
     }
 
+    public static function handle(): void
+    {
+        $middleware = new self();
+
+        $middleware->requireAuth();
+    }
+
 
     public function requireAuth(): void
     {

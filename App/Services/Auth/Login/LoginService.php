@@ -5,6 +5,7 @@ namespace App\Services\Auth\Login;
 use App\Repositories\AdminRepository;
 use App\Services\Auth\TwoFactor\TwoFactorService;
 use App\Session\SessionManager;
+use App\Services\Logs\LogsService;
 use RuntimeException;
 
 class LoginService
@@ -16,7 +17,8 @@ class LoginService
         private AdminRepository $admins,
         private LoginRateLimiter $rateLimiter,
         private TwoFactorService $twoFactorService,
-        private SessionManager $session
+        private SessionManager $session,
+        private LogsService $logService
     ) {
     }
 
@@ -77,7 +79,7 @@ class LoginService
             $admin->passwordHash
         )) {
 
-            $this->rateLimiter->recordFailure(
+            $failedAttempts = $this->rateLimiter->recordFailure(
                 $admin->adminId,
                 $username,
                 $ip,
@@ -85,8 +87,23 @@ class LoginService
                 $userAgent
             );
 
+            $remainingAttempts = max(0, $this->rateLimiter->maxAttempts() - $failedAttempts);
+
+            if ($remainingAttempts === 0) {
+                throw new RuntimeException(
+                    'Incorrect username or password. ' .
+                    'You have 0 attempts remaining. ' .
+                    'Your account is temporarily locked.'
+                );
+            }
+
             throw new RuntimeException(
-                'Incorrect username or password.'
+                'Incorrect username or password. ' .
+                'You have ' .
+                $remainingAttempts .
+                ' ' .
+                ($remainingAttempts === 1 ? 'attempt' : 'attempts') .
+                ' remaining.'
             );
         }
 
@@ -228,6 +245,17 @@ class LoginService
         $this->session->remove('admin_2fa_pending');
         $this->session->remove('admin_2fa_id');
         $this->session->remove('admin_2fa_expires_at');
+
+        /**
+         * Record logs
+         */
+        $this->logService->record(
+            $adminId,
+            'LOGIN',
+            'Administrator logged into the system.',
+            'authentication',
+            $adminId
+        );
 
 
         return [

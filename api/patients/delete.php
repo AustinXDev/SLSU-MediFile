@@ -6,10 +6,13 @@ use App\Controllers\PatientControllers\PatientController;
 use App\Middleware\AdminMiddleware;
 use App\Repositories\PatientRepositories\DentalClinicRepository;
 use App\Repositories\PatientRepositories\DentalRecordRepository;
+use App\Repositories\PatientRepositories\DentalServiceRepository;
 use App\Repositories\PatientRepositories\DentaTreatmentPlanRepository;
 use App\Repositories\PatientRepositories\PatientRepository;
 use App\Repositories\PatientRepositories\PhysicalExaminationRepository;
+use App\Repositories\LogRepositories\LogRepository;
 use App\Services\PatientServices\PatientService;
+use App\Services\Logs\LogsService;
 use App\Session\SessionManager;
 
 header(
@@ -43,8 +46,12 @@ try {
     $dentalClinicRepo = new DentalClinicRepository($pdo);
 
     $dentalTreatmentRepo = new DentaTreatmentPlanRepository($pdo);
+    $dentalServiceRepo = new DentalServiceRepository($pdo);
 
-    $service = new PatientService($pdo, $patientRepo, $physicalExamRepo, $dentalRepo, $dentalClinicRepo, $dentalTreatmentRepo);
+    $logRepo = new LogRepository($pdo);
+
+    $logService = new LogsService($logRepo);
+    $service = new PatientService($pdo, $patientRepo, $physicalExamRepo, $dentalRepo, $dentalClinicRepo, $dentalTreatmentRepo, $dentalServiceRepo, $logService, $session);
 
     $controller = new PatientController($service);
 

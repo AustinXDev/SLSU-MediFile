@@ -37,4 +37,13 @@ class PatientController
 
     }
 
+
+    public function deleteDentalService(
+        int $serviceId
+    ): void {
+
+        $this->service->deleteDentalService($serviceId);
+
+    }
+
 }
