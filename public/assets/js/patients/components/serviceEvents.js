@@ -98,8 +98,6 @@ export const serviceEvents = {
     tbody.addEventListener("click", (event) => {
       const button = event.target.closest("[data-remove-service]");
 
-      console.log("remove clicked");
-
       if (!button) return;
 
       const index = Number(button.dataset.removeService);

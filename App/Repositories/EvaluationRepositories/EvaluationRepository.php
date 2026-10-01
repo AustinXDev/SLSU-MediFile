@@ -82,6 +82,8 @@ class EvaluationRepository
           ?,
           ?,
           ?,
+          ?,
+          ?,
           ?
         )
       ";

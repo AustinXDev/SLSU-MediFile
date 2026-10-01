@@ -92,7 +92,6 @@ export const patientEvents = {
     });
 
     dom.get("downloadDocument")?.addEventListener("click", () => {
-      console.log("clicked");
       downloadDocument();
     });
 

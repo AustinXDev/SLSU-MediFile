@@ -1,5 +1,4 @@
 export function downloadDocument() {
-  console.log("downloadDocument() called");
   const element = document.querySelector(".document");
 
   if (!element) {
