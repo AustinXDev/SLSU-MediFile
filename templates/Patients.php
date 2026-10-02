@@ -82,7 +82,7 @@ $pageTitle = 'Patients Record';
               </span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="users" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-user-nurse"></i>
               </span>

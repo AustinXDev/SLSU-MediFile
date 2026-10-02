@@ -90,7 +90,7 @@ $middleware->requireAuth();
                 <span>Patient Records</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="users" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-nurse"></i></span>
                 <span>Users / Staff</span>
             </a>

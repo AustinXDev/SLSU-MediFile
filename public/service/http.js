@@ -15,3 +15,12 @@ export async function post(url, data) {
 
   return result;
 }
+
+export function get(url) {
+  const response = fetch(url, {
+    method: "GET",
+    header: {
+      "Content-type": "application/json",
+    },
+  });
+}
