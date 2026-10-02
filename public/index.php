@@ -22,6 +22,10 @@ switch($request) {
     require_once __DIR__ . '/../templates/Dashboard.php';
     break;
 
+  case 'csmdashboard':
+    require_once __DIR__ . '/../templates/CsmDashboard.php';
+    break;
+
   case 'patients':
     require_once __DIR__ . '/../templates/Patients.php';
     break;

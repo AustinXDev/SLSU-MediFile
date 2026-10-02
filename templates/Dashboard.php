@@ -80,12 +80,12 @@ $middleware->requireAuth();
 
             <p class="nav-label">MAIN MENU</p>
 
-            <a href="#" class="nav-item active">
+            <a href="dashboard" class="nav-item active">
                 <span class="nav-icon"><i class="fa-solid fa-house"></i></span>
                 <span>Dashboard</span>
             </a>
 
-            <a href="<?= BASE_URL ?>Patients" class="nav-item">
+            <a href="patients" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-injured"></i></span>
                 <span>Patient Records</span>
             </a>
@@ -95,7 +95,7 @@ $middleware->requireAuth();
                 <span>Users / Staff</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="csmdashboard" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
                 <span>Reports & Analytics</span>
             </a>
@@ -103,12 +103,6 @@ $middleware->requireAuth();
             <a href="#" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
                 <span>Activity Logs</span>
-            </a>
-
-            <a href="#" class="nav-item notification-nav">
-                <span class="nav-icon"><i class="fa-solid fa-bell"></i></span>
-                <span>Notifications</span>
-                <b>3</b>
             </a>
 
             <a href="#" class="nav-item">
@@ -171,19 +165,6 @@ $middleware->requireAuth();
 
 
             <div class="header-right">
-
-                <!-- Search -->
-                <div class="search">
-
-                    <span><i class="fa-solid fa-magnifying-glass"></i></span>
-
-                    <input
-                        type="text"
-                        placeholder="Search records, patients..."
-                    >
-
-                </div>
-
 
                 <!-- Notification -->
                 <button class="header-button notification-button">

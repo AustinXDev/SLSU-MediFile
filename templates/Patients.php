@@ -62,7 +62,7 @@ $pageTitle = 'Patients Record';
               MAIN MENU
             </p>
 
-            <a href="<?= BASE_URL ?>Dashboard" class="nav-item">
+            <a href="dashboard" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-house"></i>
               </span>
@@ -72,7 +72,7 @@ $pageTitle = 'Patients Record';
               </span>
             </a>
 
-            <a href="<?= BASE_URL ?>Patients" class="nav-item active" aria-current="page">
+            <a href="patients" class="nav-item active" aria-current="page">
               <span class="nav-icon">
                 <i class="fa-solid fa-user-injured"></i>
               </span>
@@ -92,7 +92,7 @@ $pageTitle = 'Patients Record';
               </span>
             </a>
 
-            <a href="#" class="nav-item">
+            <a href="csmdashboard" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-chart-line"></i>
               </span>
@@ -110,20 +110,6 @@ $pageTitle = 'Patients Record';
               <span>
                 Activity Logs
               </span>
-            </a>
-
-            <a href="#" class="nav-item notification-nav">
-              <span class="nav-icon">
-                <i class="fa-solid fa-bell"></i>
-              </span>
-
-              <span>
-                Notifications
-              </span>
-              
-              <b>
-                3
-              </b>
             </a>
 
             <a href="#" class="nav-item">
@@ -171,14 +157,6 @@ $pageTitle = 'Patients Record';
             </div>
 
             <div class="header-right">
-                <div class="search">
-                  <span>
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                  </span>
-                  
-                  <input id="headerSearch" type="search" placeholder="Search records, patients..." aria-label="Search records and patients">
-                </div>
-
                 <button class="header-button notification-button" aria-label="Notifications">
                   <i class="fa-solid fa-bell"></i>
                   <i></i>
