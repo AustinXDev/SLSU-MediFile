@@ -77,6 +77,7 @@ export const patientForm = {
     return {
       id: dom.value("patientId"),
       basicInformation: {
+        studentId: dom.value("StudentId"),
         surname: dom.value("surName"),
         firstname: dom.value("firstName"),
         middlename: dom.value("middleName"),

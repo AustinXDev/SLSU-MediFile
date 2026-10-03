@@ -30,6 +30,7 @@ export const patientModal = {
 
     const fields = {
       patientId: record.id,
+      StudentId: record.studentId,
       examinationId: record.examinationId,
       dentalId: record.dental_id,
       patientIdDisplay: record.id,
@@ -172,11 +173,26 @@ export const documentModal = {
       documentGuardianAdrress: patient.emergencyAddress,
       documentGuardianTelNo: patient.emergencyNumber,
       documentBloodPressure: patient.blood_pressure,
-      documentTemp: patient.temperature,
-      documentPulseRate: patient.pulse_rate,
-      documentRespRate: patient.respiratory_rate,
-      documentHeight: patient.height_cm,
-      documentWeight: patient.weight_kg,
+      documentTemp:
+        patient.temperature && Number(patient.temperature) !== 0
+          ? patient.temperature
+          : "",
+      documentPulseRate:
+        patient.pulse_rate && Number(patient.pulse_rate) !== 0
+          ? patient.pulse_rate
+          : "",
+      documentRespRate:
+        patient.respiratory_rate && Number(patient.respiratory_rate) !== 0
+          ? patient.respiratory_rate
+          : "",
+      documentHeight:
+        patient.height_cm && Number(patient.height_cm) !== 0
+          ? patient.height_cm
+          : "",
+      documentWeight:
+        patient.weight_kg && Number(patient.weight_kg) !== 0
+          ? patient.weight_kg
+          : "",
       documentIdealWeight: calculateIdealWeight(
         patient.height_cm,
         patient.gender,

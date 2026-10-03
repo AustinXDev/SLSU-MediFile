@@ -22,7 +22,7 @@ export const patientTable = {
 
     return `<tr>
       <td>
-        <span class="patient-id">${html.escape(patient.id)}</span>
+        <span class="patient-id">${html.escape(patient.studentId)}</span>
       </td>
 
       <td>

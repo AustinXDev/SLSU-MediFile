@@ -3,6 +3,7 @@ import { dateUtils } from "../utils/dateUtils.js";
 
 export const patientValidation = {
   requiredFields: [
+    ["StudentId", "Student id is required."],
     ["firstName", "First name is required."],
     ["surName", "Surname is required."],
     ["middleName", "Middle name is required."],

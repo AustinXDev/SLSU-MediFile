@@ -35,10 +35,11 @@ class PatientRepository
             $conditions[] = "(
                 CONCAT_WS(' ', p.firstname, p.middlename, p.surname) LIKE ?
                 OR CAST(p.patient_id AS CHAR) LIKE ?
+                OR CAST(p.student_id AS CHAR) LIKE ?
                 OR p.tel_no LIKE ?
             )";
             $searchValue = '%' . $search . '%';
-            array_push($values, $searchValue, $searchValue, $searchValue);
+            array_push($values, $searchValue, $searchValue, $searchValue, $searchValue);
         }
 
         if ($gender !== '') {
@@ -83,6 +84,7 @@ class PatientRepository
                 pe.id AS examinationId,
                 p.patient_id AS id,
                 p.patient_id AS patient_id,
+                p.student_id AS studentId,
                 p.surname,
                 p.firstname AS firstname,
                 p.middlename AS middlename,
@@ -177,6 +179,7 @@ class PatientRepository
     {
 
         $sql = "INSERT INTO patients (
+                student_id,
                 surname, 
                 firstname, 
                 middlename, 
@@ -193,11 +196,12 @@ class PatientRepository
                 ice_address, 
                 ice_tel_no, 
                 is_active
-            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         $stmt = $this->pdo->prepare($sql);
 
         $executed = $stmt->execute([
+            $patient['studentId'] ?? null,
             $patient['surname'] ?? null,
             $patient['firstname'] ?? $patient['first_name'] ?? null,
             $patient['middlename'] ?? $patient['middle_name'] ?? null,
@@ -226,6 +230,7 @@ class PatientRepository
     ): bool {
 
         $sql = "UPDATE patients SET 
+            student_id          = ?,
             surname             = ?, 
             firstname           = ?, 
             middlename          = ?, 
@@ -246,6 +251,7 @@ class PatientRepository
         $stmt = $this->pdo->prepare($sql);
 
         return $stmt->execute([
+            $patient['studentId'] ?? null,
             $patient['surname'] ?? null,
             $patient['firstname'] ?? $patient['first_name'] ?? null,
             $patient['middlename'] ?? $patient['middle_name'] ?? null,

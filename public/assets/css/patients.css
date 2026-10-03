@@ -54,7 +54,7 @@
 .patient-toolbar {
   display: grid;
   grid-template-columns:
-    minmax(230px, 1.7fr) repeat(3, minmax(130px, 0.75fr))
+    minmax(230px, 1.7fr) repeat(2, minmax(140px, 0.75fr))
     auto;
   align-items: end;
   gap: 12px;
@@ -93,6 +93,14 @@
 .form-field textarea:focus {
   border-color: var(--green-400);
   box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.09);
+}
+
+input[type="text"] {
+  text-transform: uppercase;
+}
+
+input[type="text"]:read-only {
+  text-transform: lowercase;
 }
 
 .filter-field {
@@ -138,6 +146,11 @@
 .patient-table-wrapper table {
   min-width: 950px;
 }
+
+.patient-table-wrapper th {
+  font-size: 9px;
+}
+
 .patient-table-wrapper th,
 .patient-table-wrapper td {
   white-space: nowrap;
@@ -418,6 +431,7 @@
   height: 38px;
   padding: 0 11px;
 }
+
 .form-field textarea {
   min-height: 70px;
   padding: 10px 11px;
@@ -1711,6 +1725,10 @@
   padding-top: 8mm;
 }
 
+.document.pdf-export .document-page.page-two {
+  padding-top: 4mm;
+}
+
 /* ==============================
    PAGE 1 - HEADER
 ============================== */
@@ -2193,10 +2211,14 @@
   margin-top: 14px;
 }
 
-.services-table th,
-.services-table td {
+.services-table th {
   border: 1px solid var(--ink);
   padding: 4px 6px;
+}
+
+.services-table td {
+  border: 1px solid var(--ink);
+  padding: 0px 6px;
 }
 
 .services-table th {
@@ -2206,6 +2228,10 @@
 
 .service-patient-signature {
   text-align: center;
+  position: relative;
+  height: 38px;
+  max-height: 38px;
+  overflow: hidden;
 }
 
 .col-date {
@@ -2228,12 +2254,12 @@
    PAGE 2 FOOTER
 ============================== */
 .page2-footer {
-  margin-top: 20px;
+  margin-top: 10px;
   font-size: 12.5px;
 }
 
 .examined-by {
-  margin-bottom: 30px;
+  margin-bottom: 5px;
 }
 
 .sig-line.dentist-sig {

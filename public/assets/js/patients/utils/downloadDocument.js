@@ -34,5 +34,15 @@ export function downloadDocument() {
     },
   };
 
-  html2pdf().set(options).from(element).save();
+  element.classList.add("pdf-export");
+
+  try {
+    const exportPromise = html2pdf().set(options).from(element).save();
+    return Promise.resolve(exportPromise).finally(() => {
+      element.classList.remove("pdf-export");
+    });
+  } catch (error) {
+    element.classList.remove("pdf-export");
+    throw error;
+  }
 }

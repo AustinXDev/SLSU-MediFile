@@ -208,7 +208,7 @@ $pageTitle = 'Patients Record';
             <section class="card patient-toolbar" aria-label="Patient search and filters">
                 <div class="patient-search">
                   <i class="fa-solid fa-magnifying-glass"></i>
-                  <input id="patientSearch" type="search" placeholder="Search by name, patient ID, or contact number" aria-label="Search patients">
+                  <input id="patientSearch" type="search" placeholder="Search by name, student ID, or contact number" aria-label="Search patients">
                 </div>
 
                 <label class="filter-field">
@@ -250,34 +250,9 @@ $pageTitle = 'Patients Record';
                     </option>
 
                     <option value="adult">
-                      18-59
+                      18-40
                     </option>
 
-                    <option value="senior">
-                      60 and above
-                    </option>
-
-                  </select>
-                </label>
-
-                <label class="filter-field">
-                  <span>
-                    Status
-                  </span>
-
-                  <select id="statusFilter">
-
-                    <option value="">
-                      All statuses
-                    </option>
-
-                    <option value="Active">
-                      Active
-                    </option>
-                    
-                    <option value="Inactive">
-                      Inactive
-                    </option>
                   </select>
                 </label>
 
@@ -326,7 +301,7 @@ $pageTitle = 'Patients Record';
                     <table id="patientsTable" aria-describedby="resultSummary">
                       <thead>
                         <tr>
-                          <th>Patient ID</th>
+                          <th>Student ID</th>
                           <th>Patient Name</th>
                           <th>Age</th>
                           <th>Gender</th>
@@ -418,6 +393,14 @@ $pageTitle = 'Patients Record';
                           <span>Patient ID</span>
                           <input style="text-align: center;" id="patientIdDisplay" type="hidden" readonly>
                         </label>
+
+                        <div class="form-field-group-1">
+                          <label for="form-field required" class="form-field">
+                            <span>Student ID</span>
+                            <input style="text-align: center;" id="StudentId" type="text">
+                            <small class="field-error"></small>
+                          </label>
+                        </div>
                         
                         <div class="form-field-group">
 
