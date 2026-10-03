@@ -51,17 +51,9 @@ class PatientService
 
     }
 
-    public function getAll(): array
+    public function getAll(array $params = []): array
     {
-
-        try {
-            return $this->patientRepo->getAll();
-        } catch (\PDOException $e) {
-            error_log("PatientService::getAll Error: " . $e->getMessage());
-
-            return [];
-        }
-
+        return $this->patientRepo->getAll($params);
     }
 
 

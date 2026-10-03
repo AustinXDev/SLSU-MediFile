@@ -140,7 +140,7 @@ export const serviceEvents = {
 
       serviceState.removeSaved(serviceId);
 
-      await patientData.load();
+      await patientData.loadPatients();
 
       const patient = patientData.find(state.editingId);
 

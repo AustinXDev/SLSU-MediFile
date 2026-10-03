@@ -3,6 +3,7 @@
 namespace App\Repositories\PatientRepositories;
 
 use PDO;
+use RuntimeException;
 
 class PatientRepository
 {
@@ -14,9 +15,68 @@ class PatientRepository
         $this->pdo = $pdo;
     }
 
-    public function getAll(): array
+    public function getAll(array $params = []): array
     {
-        $sql = "SELECT 
+        $page = filter_var($params['page'] ?? 1, FILTER_VALIDATE_INT);
+        $page = $page === false || $page < 1 ? 1 : $page;
+
+        $limit = filter_var($params['limit'] ?? 10, FILTER_VALIDATE_INT);
+        $limit = $limit === false || $limit < 1 ? 10 : min(100, $limit);
+
+        $search = trim((string) ($params['search'] ?? ''));
+        $gender = trim((string) ($params['gender'] ?? ''));
+        $ageGroup = trim((string) ($params['ageGroup'] ?? ''));
+        $status = trim((string) ($params['status'] ?? ''));
+
+        $conditions = ['1 = 1'];
+        $values = [];
+
+        if ($search !== '') {
+            $conditions[] = "(
+                CONCAT_WS(' ', p.firstname, p.middlename, p.surname) LIKE ?
+                OR CAST(p.patient_id AS CHAR) LIKE ?
+                OR p.tel_no LIKE ?
+            )";
+            $searchValue = '%' . $search . '%';
+            array_push($values, $searchValue, $searchValue, $searchValue);
+        }
+
+        if ($gender !== '') {
+            $conditions[] = 'p.sex = ?';
+            $values[] = $gender;
+        }
+
+        $ageConditions = [
+            'child' => 'TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE()) < 18',
+            'adult' => 'TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE()) BETWEEN 18 AND 59',
+            'senior' => 'TIMESTAMPDIFF(YEAR, p.birthdate, CURDATE()) >= 60',
+        ];
+        if ($ageGroup !== '') {
+            if (!isset($ageConditions[$ageGroup])) {
+                throw new RuntimeException('Unsupported patient age filter.');
+            }
+            $conditions[] = $ageConditions[$ageGroup];
+        }
+
+        if ($status !== '') {
+            if (!in_array($status, ['Active', 'Inactive'], true)) {
+                throw new RuntimeException('Unsupported patient status filter.');
+            }
+            $conditions[] = 'p.is_active = ?';
+            $values[] = $status === 'Active' ? 1 : 0;
+        }
+
+        $where = implode(' AND ', $conditions);
+        $countStmt = $this->pdo->prepare(
+            "SELECT COUNT(*) FROM patients p WHERE {$where}"
+        );
+        $countStmt->execute($values);
+        $total = (int) $countStmt->fetchColumn();
+        $totalPages = max(1, (int) ceil($total / $limit));
+        $page = min($page, $totalPages);
+        $offset = ($page - 1) * $limit;
+
+        $sql = "SELECT
                 pe.*,
                 pd.*,
                 pd.dental_id,
@@ -40,24 +100,41 @@ class PatientRepository
                 p.ice_tel_no AS emergencyNumber,
                 p.created_at AS createdAt,
                 p.is_active AS status
-            
             FROM patients p
-
             LEFT JOIN patient_medical_examinations pe
-            ON pe.patient_id = p.patient_id
-
+                ON pe.id = (
+                    SELECT pe_latest.id
+                    FROM patient_medical_examinations pe_latest
+                    WHERE pe_latest.patient_id = p.patient_id
+                    ORDER BY pe_latest.id DESC
+                    LIMIT 1
+                )
             LEFT JOIN patient_dental_records pd
-            ON pd.patient_id = p.patient_id
-
-            WHERE p.is_active = 1
-            ORDER BY p.created_at DESC";
+                ON pd.dental_id = (
+                    SELECT pd_latest.dental_id
+                    FROM patient_dental_records pd_latest
+                    WHERE pd_latest.patient_id = p.patient_id
+                    ORDER BY pd_latest.dental_id DESC
+                    LIMIT 1
+                )
+            WHERE {$where}
+            ORDER BY p.created_at DESC, p.patient_id DESC
+            LIMIT ? OFFSET ?";
 
         $stmt = $this->pdo->prepare($sql);
+        foreach ($values as $index => $value) {
+            $stmt->bindValue($index + 1, $value);
+        }
+        $stmt->bindValue(count($values) + 1, $limit, PDO::PARAM_INT);
+        $stmt->bindValue(count($values) + 2, $offset, PDO::PARAM_INT);
         $stmt->execute();
 
         $patients = $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
 
         foreach ($patients as &$patient) {
+            $patient['id'] = (int) $patient['id'];
+            $patient['patient_id'] = (int) $patient['patient_id'];
+            $patient['status'] = (int) $patient['status'];
 
             $dentalId = !empty($patient['dental_id'])
                 ? (int) $patient['dental_id']
@@ -74,7 +151,20 @@ class PatientRepository
 
         unset($patient);
 
-        return $patients;
+        $maxPatientId = (int) $this->pdo
+            ->query('SELECT COALESCE(MAX(patient_id), 0) FROM patients')
+            ->fetchColumn();
+
+        return [
+            'patients' => $patients,
+            'pagination' => [
+                'page' => $page,
+                'limit' => $limit,
+                'total' => $total,
+                'totalPages' => $totalPages,
+            ],
+            'maxPatientId' => $maxPatientId,
+        ];
     }
 
     /**

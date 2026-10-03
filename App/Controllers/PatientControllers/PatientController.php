@@ -12,11 +12,9 @@ class PatientController
     }
 
 
-    public function getAll(): array
+    public function getAll(array $params = []): array
     {
-
-        return $this->service->getAll();
-
+        return $this->service->getAll($params);
     }
 
     public function upsert(

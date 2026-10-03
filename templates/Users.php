@@ -141,7 +141,7 @@ $pageTitle = 'User & Staff Accounts';
             <section class="card user-toolbar" aria-label="User search and filters">
                 <div class="user-search">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input id="userSearch" type="search" placeholder="Search users..." aria-label="Search user accounts">
+                    <input id="userSearch" type="search" placeholder="Search by name, username, or email" aria-label="Search user accounts">
                 </div>
 
                 <label class="filter-field">
@@ -157,12 +157,16 @@ $pageTitle = 'User & Staff Accounts';
                         <option value="">All Statuses</option>
                     </select>
                 </label>
+
+                <button class="clear-filter" type="button" id="clearFiltersButton">Clear filters</button>
             </section>
 
             <section class="card users-card">
                 <div class="users-card-header">
-                    <div class="record-count" id="resultSummary">Loading accounts...</div>
-                    <button class="clear-filter" type="button" id="clearFiltersButton">Clear filters</button>
+                    <div>
+                        <h3>All User Accounts</h3>
+                        <p class="record-count" id="resultSummary">Loading accounts...</p>
+                    </div>
                 </div>
 
                 <div class="user-table-wrapper">

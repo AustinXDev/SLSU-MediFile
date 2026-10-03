@@ -3,8 +3,15 @@ import { html } from "../utils/html.js";
 
 export const state = {
   patients: [],
+  search: "",
   page: 1,
   pageSize: 5,
+  gender: "",
+  ageGroup: "",
+  status: "",
+  total: 0,
+  totalPages: 1,
+  highestPatientId: 0,
   editingId: null,
   viewOnly: false,
 };

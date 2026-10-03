@@ -144,9 +144,9 @@ export function renderTable(accounts = []) {
           <td>${escapeHtml(formatDate(account.updated_at))}</td>
           <td>
             <div class="user-actions">
-              <button class="action-button" type="button" data-action="view" data-id="${escapeHtml(account.admin_id)}">View</button>
-              <button class="action-button" type="button" data-action="edit" data-id="${escapeHtml(account.admin_id)}">Edit</button>
-              <button class="action-button delete" type="button" data-action="delete" data-id="${escapeHtml(account.admin_id)}">Delete</button>
+              <button class="action-button" type="button" data-action="view" data-id="${escapeHtml(account.admin_id)}" aria-label="View account" title="View account"><i class="fa-solid fa-eye" aria-hidden="true"></i></button>
+              <button class="action-button" type="button" data-action="edit" data-id="${escapeHtml(account.admin_id)}" aria-label="Edit account" title="Edit account"><i class="fa-solid fa-pen" aria-hidden="true"></i></button>
+              <button class="action-button delete" type="button" data-action="delete" data-id="${escapeHtml(account.admin_id)}" aria-label="Delete account" title="Delete account"><i class="fa-solid fa-trash" aria-hidden="true"></i></button>
             </div>
           </td>
         </tr>

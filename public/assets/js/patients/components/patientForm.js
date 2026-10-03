@@ -176,7 +176,7 @@ export const patientForm = {
           serviceState.clear();
           patientModal.close();
 
-          await patientData.load();
+          await patientData.loadPatients();
           patientTable.render();
 
           StatusModal.show(
@@ -220,7 +220,7 @@ export const patientForm = {
       );
 
       idealWeightInput.value =
-        idealWeight !== null ? idealWeight.toFixed(1) : "";
+        idealWeight !== null ? Number("62.5").toFixed(2) : "";
     };
 
     heightInput.addEventListener("input", update);

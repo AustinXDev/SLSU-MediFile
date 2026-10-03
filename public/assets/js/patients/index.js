@@ -16,7 +16,7 @@ function closeSidebar() {
 
 async function init() {
   try {
-    await patientData.load();
+    await patientData.loadPatients();
 
     patientEvents.bind();
     serviceEvents.init();

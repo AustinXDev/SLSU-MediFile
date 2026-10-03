@@ -11,36 +11,69 @@ import { Loader } from "../../components/loader.js";
 import { serviceState } from "./state.js";
 import { downloadDocument } from "../utils/downloadDocument.js";
 
+let patientSearchTimer;
+
+async function reloadPatients() {
+  await patientData.loadPatients();
+  patientTable.render();
+}
+
+function schedulePatientSearch(value) {
+  window.clearTimeout(patientSearchTimer);
+  patientSearchTimer = window.setTimeout(() => {
+    state.search = String(value ?? "").trim();
+    state.page = 1;
+    reloadPatients().catch((error) =>
+      console.error("Unable to search patient records:", error),
+    );
+  }, 300);
+}
+
 export const patientEvents = {
   bind() {
     setTimeout(() => {
       if (dom.get("tableLoading")) dom.get("tableLoading").hidden = true;
-      patientTable.render();
     }, 350);
 
-    ["patientSearch", "genderFilter", "ageFilter", "statusFilter"].forEach(
-      (id) => {
-        dom.get(id)?.addEventListener("input", () => {
-          state.page = 1;
-          patientTable.render();
-        });
-      },
-    );
+    dom.get("patientSearch")?.addEventListener("input", (event) => {
+      schedulePatientSearch(event.target.value);
+    });
 
-    dom.get("headerSearch")?.addEventListener("input", () => {
-      dom.setValue("patientSearch", dom.get("headerSearch").value);
-      state.page = 1;
-      patientTable.render();
+    dom.get("headerSearch")?.addEventListener("input", (event) => {
+      dom.setValue("patientSearch", event.target.value);
+      schedulePatientSearch(event.target.value);
+    });
+
+    ["genderFilter", "ageFilter", "statusFilter"].forEach((id) => {
+      dom.get(id)?.addEventListener("change", (event) => {
+        const stateKey = {
+          genderFilter: "gender",
+          ageFilter: "ageGroup",
+          statusFilter: "status",
+        }[id];
+
+        state[stateKey] = event.target.value;
+        state.page = 1;
+        reloadPatients().catch((error) =>
+          console.error("Unable to filter patient records:", error),
+        );
+      });
     });
 
     dom.get("clearFilters")?.addEventListener("click", () => {
+      window.clearTimeout(patientSearchTimer);
       patientSearch.clear();
-      patientTable.render();
+      reloadPatients().catch((error) =>
+        console.error("Unable to load patient records:", error),
+      );
     });
 
     dom.get("emptyClear")?.addEventListener("click", () => {
+      window.clearTimeout(patientSearchTimer);
       patientSearch.clear();
-      patientTable.render();
+      reloadPatients().catch((error) =>
+        console.error("Unable to load patient records:", error),
+      );
     });
 
     dom
@@ -134,10 +167,11 @@ export const patientEvents = {
           async () => {
             load.show();
             try {
-              const response = patientData.remove(patient.id);
+              const response = await patientData.remove(patient.id);
 
-              if (response.status === "error") {
+              if (response.data?.status === "error") {
                 StatusModal.show("Failed", "Failed to delete patient record.");
+                return;
               }
 
               StatusModal.show(
@@ -145,9 +179,7 @@ export const patientEvents = {
                 `${patientData.fullName(patient)}'s record was successfully deleted.`,
               );
 
-              await patientData.load();
-
-              patientTable.render();
+              await reloadPatients();
             } catch (error) {
               load.hide();
               console.error(error);
@@ -173,7 +205,19 @@ export const patientEvents = {
     const button = event.target.closest("button[data-page]");
     if (!button || button.disabled) return;
 
-    state.page = Number(button.dataset.page);
-    patientTable.render();
+    const page = Number(button.dataset.page);
+    if (
+      !Number.isInteger(page) ||
+      page < 1 ||
+      page > state.totalPages ||
+      page === state.page
+    ) {
+      return;
+    }
+
+    state.page = page;
+    reloadPatients().catch((error) =>
+      console.error("Unable to load patient page:", error),
+    );
   },
 };

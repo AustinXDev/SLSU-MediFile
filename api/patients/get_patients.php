@@ -65,7 +65,7 @@ try {
 
     $controller = new PatientController($service);
 
-    $result = $controller->getAll();
+    $result = $controller->getAll($_GET);
 
     http_response_code(200);
     echo json_encode([

@@ -89,17 +89,9 @@ export const patientTable = {
     }" ${state.page === totalPages ? "disabled" : ""}><i class="fa-solid fa-chevron-right"></i></button>`;
   },
 
-  async render() {
-    //await patientData.load();
-
-    const results = patientSearch.filterPatients();
-
-    const totalPages = Math.max(1, Math.ceil(results.length / state.pageSize));
-
-    state.page = Math.min(state.page, totalPages);
-
-    const start = (state.page - 1) * state.pageSize;
-    const pageRows = results.slice(start, start + state.pageSize);
+  render() {
+    const pageRows = Array.isArray(state.patients) ? state.patients : [];
+    const totalPages = Math.max(1, Number(state.totalPages) || 1);
 
     dom.get("patientsBody").innerHTML = pageRows
       .map((patient) => this.row(patient))
@@ -109,10 +101,10 @@ export const patientTable = {
     dom.get("emptyState").hidden = pageRows.length !== 0;
 
     dom.get("recordCount").textContent =
-      `${results.length} patient${results.length === 1 ? "" : "s"}`;
+      `${state.total} patient${state.total === 1 ? "" : "s"}`;
 
     dom.get("resultSummary").textContent = patientSearch.hasActiveFilters()
-      ? `${results.length} search result${results.length === 1 ? "" : "s"}`
+      ? `${state.total} search result${state.total === 1 ? "" : "s"}`
       : "Showing patient records";
 
     dom.get("pagination").innerHTML = this.pagination(totalPages);

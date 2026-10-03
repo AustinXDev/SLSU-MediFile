@@ -11,12 +11,7 @@ export const patientData = {
   },
 
   nextId() {
-    const highestId = state.patients.reduce(
-      (highest, patient) => Math.max(highest, Number(patient.id)),
-      0,
-    );
-
-    return `P-${new Date().getFullYear()}-${String(highestId + 1).padStart(
+    return `P-${new Date().getFullYear()}-${String(state.highestPatientId + 1).padStart(
       4,
       "0",
     )}`;
@@ -28,19 +23,46 @@ export const patientData = {
     );
   },
 
-  async load() {
+  async loadPatients() {
+    const parsedPage = Number(state.page);
+    state.page = Number.isInteger(parsedPage) && parsedPage > 0 ? parsedPage : 1;
+
+    const parsedLimit = Number(state.pageSize);
+    state.pageSize = Number.isInteger(parsedLimit)
+      ? Math.max(1, Math.min(100, parsedLimit))
+      : 5;
+
     try {
-      const response = await api.get("patients/get_patients.php");
+      const response = await api.get("patients/get_patients.php", {
+        params: {
+          page: state.page,
+          limit: state.pageSize,
+          search: state.search,
+          gender: state.gender,
+          ageGroup: state.ageGroup,
+          status: state.status,
+        },
+      });
 
-      state.patients = response?.data?.data || response;
+      const result = response?.data?.data || {};
+      const pagination = result.pagination || {};
 
-      console.log(state.patients);
+      state.patients = Array.isArray(result.patients) ? result.patients : [];
+      state.page = Number(pagination.page) || state.page;
+      state.pageSize = Number(pagination.limit) || state.pageSize;
+      state.total = Number(pagination.total) || 0;
+      state.totalPages = Math.max(1, Number(pagination.totalPages) || 1);
+      state.highestPatientId = Number(result.maxPatientId) || 0;
 
-      return state.patients;
+      return result;
     } catch (error) {
       console.error("Failed to fetch patients:", error);
       throw error;
     }
+  },
+
+  async load() {
+    return this.loadPatients();
   },
 
   async save(record) {
