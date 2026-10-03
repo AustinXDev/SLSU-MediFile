@@ -9,7 +9,7 @@ $middleware = new AdminMiddleware($session);
 $middleware->requireAuth();
 
 $role = trim((string) ($session->get('role') ?? ''));
-if (!in_array($role, ['Super Admin', 'Administrator'], true)) {
+if (!in_array($role, ['Super Admin'], true)) {
     http_response_code(403);
     echo 'Access denied.';
     exit;
@@ -109,10 +109,10 @@ $pageTitle = 'User & Staff Accounts';
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="#" class="logout">
+            <button type="button" class="logout" data-logout>
                 <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                 <span>Logout</span>
-            </a>
+            </button>
         </div>
     </aside>
 
@@ -395,6 +395,10 @@ $pageTitle = 'User & Staff Accounts';
 
 <script>
     window.APP_API = "<?= API_URL ?>";
+    window.APP_ENV = {
+        APP_URL: <?= json_encode(API_URL) ?>,
+        BASE_URL: <?= json_encode(BASE_URL) ?>
+    };
 </script>
 <script src="<?= BASE_URL ?>assets/js/components/modal.js"></script>
 <script type="module" src="<?= BASE_URL ?>assets/js/users/index.js"></script>

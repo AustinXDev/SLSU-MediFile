@@ -1,5 +1,6 @@
 import { activityData } from "./components/activityData.js";
 import { activityEvents } from "./components/activityEvents.js";
+import { bindLogout } from "../components/logout.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -12,6 +13,8 @@ function closeSidebar() {
 }
 
 async function init() {
+  bindLogout();
+
   try {
     activityEvents.bind();
     await activityData.load();

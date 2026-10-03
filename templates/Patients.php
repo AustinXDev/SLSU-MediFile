@@ -124,7 +124,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
             if (strtolower(trim($role)) === 'super admin'):
                 ?>
 
-            <a href="<?= BASE_URL ?>activitylogs" class="nav-item">
+            <a href="activitylogs" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-clock-rotate-left"></i>
               </span>
@@ -148,7 +148,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
         </nav>
 
         <div class="sidebar-bottom">
-          <a href="#" class="logout">
+          <button type="button" class="logout" data-logout>
             <span class="nav-icon">
               <i class="fa-solid fa-right-from-bracket"></i>
             </span>
@@ -156,7 +156,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
             <span>
               Logout
             </span>
-          </a>
+          </button>
         </div>
     </aside>
 
@@ -2906,6 +2906,10 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 <script>
   window.BASE_URL = <?= json_encode(BASE_URL) ?>;
   window.API_URL = <?= json_encode(API_URL) ?>;
+  window.APP_ENV = {
+    APP_URL: <?= json_encode(API_URL) ?>,
+    BASE_URL: <?= json_encode(BASE_URL) ?>
+  };
 </script>
 
 <script src="<?= BASE_URL ?>assets/js/components/modal.js"></script>

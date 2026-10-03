@@ -113,17 +113,17 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
             if (strtolower(trim($role)) === 'super admin'):
                 ?>
 
-            <a href="<?= BASE_URL ?>activitylogs" class="nav-item">
+            <a href="activitylogs" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
                 <span>Activity Logs</span>
             </a>
 
             <?php endif; ?>
 
-            <a href="#" class="nav-item">
+            <button class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
                 <span>Settings</span>
-            </a>
+            </button>
 
         </nav>
 
@@ -131,10 +131,10 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
         <!-- Logout -->
         <div class="sidebar-bottom">
 
-            <a href="#" class="logout">
+            <button class="logout" type="button" data-logout>
                 <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                 <span>Logout</span>
-            </a>
+            </button>
 
         </div>
 
@@ -753,6 +753,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
 </script>
 
+<script>
+    window.APP_ENV = {
+        APP_URL: <?= json_encode(API_URL) ?>,
+        BASE_URL: <?= json_encode(BASE_URL) ?>
+    };
+</script>
 <script src="<?= BASE_URL ?>assets/js/dashboard/index.js" type="module"></script>
 
 </body>

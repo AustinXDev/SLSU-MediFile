@@ -107,10 +107,10 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
         </nav>
 
         <div class="sidebar-bottom">
-            <a href="#" class="logout">
+            <button type="button" class="logout" data-logout>
                 <span class="nav-icon"><i class="fa-solid fa-right-from-bracket"></i></span>
                 <span>Logout</span>
-            </a>
+            </button>
         </div>
     </aside>
 
@@ -277,7 +277,8 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
 <script>
     window.APP_ENV = {
-        APP_URL: <?= json_encode(API_URL) ?>
+        APP_URL: <?= json_encode(API_URL) ?>,
+        BASE_URL: <?= json_encode(BASE_URL) ?>
     };
     window.APP_API = <?= json_encode(API_URL) ?>;
     window.ACTIVITY_LOGS_PAGE_URL = <?= json_encode(BASE_URL . 'activitylogs') ?>;

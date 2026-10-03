@@ -1,5 +1,6 @@
 import { userEvents } from "./components/userEvents.js";
 import { userData } from "./components/userData.js";
+import { bindLogout } from "../components/logout.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -12,6 +13,8 @@ function closeSidebar() {
 }
 
 async function init() {
+  bindLogout();
+
   try {
     await userData.loadAccounts();
     userEvents.bind();

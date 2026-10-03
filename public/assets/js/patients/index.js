@@ -3,6 +3,7 @@ import { serviceEvents } from "./components/serviceEvents.js";
 import { patientData } from "./components/patientData.js";
 import { patientTable } from "./components/patientTable.js";
 import { fitDocumentPages } from "./components/fitDocumentsPages.js";
+import { bindLogout } from "../components/logout.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -15,6 +16,8 @@ function closeSidebar() {
 }
 
 async function init() {
+  bindLogout();
+
   try {
     await patientData.loadPatients();
 

@@ -1,4 +1,5 @@
 import { dashboard } from "./components/renderCsmDashboard.js";
+import { bindLogout } from "../components/logout.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -11,6 +12,7 @@ function closeSidebar() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
+  bindLogout();
   dashboard.init();
 });
 
