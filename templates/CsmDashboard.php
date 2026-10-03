@@ -7,6 +7,12 @@ use App\Session\SessionManager;
 $session = new SessionManager();
 $middleware = new AdminMiddleware($session);
 $middleware->requireAuth();
+
+$role = trim((string) ($session->get('role') ?? ''));
+
+$username = (string) ($session->get('admin_username') ?? '');
+$roleName = (string) ($session->get('role') ?? '');
+$initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -30,31 +36,56 @@ $middleware->requireAuth();
         <div class="admin-profile">
             <div class="admin-avatar">AD</div>
             <div class="admin-info">
-                <strong><?= htmlspecialchars($session->get('admin_username') ?? '') ?></strong>
-                <span><?= htmlspecialchars($session->get('role') ?? '') ?></span>
+                <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
                 <small><i></i>Online</small>
             </div>
         </div>
         <nav class="navigation">
             <p class="nav-label">MAIN MENU</p>
-            <a href="<?= BASE_URL ?>Dashboard" class="nav-item">
+
+            <a href="Dashboard" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-house"></i></span><span>Dashboard</span>
             </a>
+
             <a href="patients" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-injured"></i></span><span>Patient Records</span>
             </a>
-            <a href="#" class="nav-item">
+
+            <?php
+                if (strtolower(trim($role)) === 'super admin'):
+                    ?>
+
+            <a href="users" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-nurse"></i></span><span>Users / Staff</span>
             </a>
+
+            <?php endif; ?>
+            
+            <?php
+                    if (strtolower(trim($role)) === 'super admin' || strtolower(trim($role)) === 'administrator'):
+                        ?>
+
             <a href="CsmDashboard" class="nav-item active" aria-current="page">
                 <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span><span>Reports &amp; Analytics</span>
             </a>
-            <a href="#" class="nav-item">
+
+            <?php endif; ?>
+            
+            <?php
+            if (strtolower(trim($role)) === 'super admin'):
+                ?>
+
+            <a href="activitylogs" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span><span>Activity Logs</span>
             </a>
+
+            <?php endif; ?>
+
             <a href="#" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span><span>Settings</span>
             </a>
+
         </nav>
         <div class="sidebar-bottom">
             <a href="#" class="logout">
@@ -77,10 +108,10 @@ $middleware->requireAuth();
             <div class="header-right">
                 <button class="header-button notification-button" aria-label="Notifications"><i class="fa-solid fa-bell"></i><i></i></button>
                 <button class="header-profile" aria-label="Administrator profile">
-                    <div class="profile-avatar">AD</div>
+                    <div class="profile-avatar"><?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?></div>
                     <div class="profile-details">
-                        <strong><?= htmlspecialchars($session->get('admin_username') ?? '') ?></strong>
-                        <span><?= htmlspecialchars($session->get('role') ?? '') ?></span>
+                        <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                        <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
                     </div>
                     <span class="profile-arrow"><i class="fa-solid fa-chevron-down"></i></span>
                 </button>

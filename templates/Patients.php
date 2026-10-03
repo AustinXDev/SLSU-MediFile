@@ -9,7 +9,13 @@ $middleware = new AdminMiddleware($session);
 
 $middleware->requireAuth();
 
+$role = trim((string) ($session->get('role') ?? ''));
+
 $pageTitle = 'Patients Record';
+
+$username = (string) ($session->get('admin_username') ?? '');
+$roleName = (string) ($session->get('role') ?? '');
+$initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
 ?>
 <!DOCTYPE html>
@@ -44,11 +50,11 @@ $pageTitle = 'Patients Record';
             </div>
             <div class="admin-info">
               <strong>
-                <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
+                <?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?>
               </strong>
 
               <span>
-                <?= htmlspecialchars($session->get('role') ?? '') ?>
+                <?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?>
               </span>
 
               <small>
@@ -82,6 +88,10 @@ $pageTitle = 'Patients Record';
               </span>
             </a>
 
+            <?php
+                if (strtolower(trim($role)) === 'super admin'):
+                    ?>
+
             <a href="users" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-user-nurse"></i>
@@ -91,6 +101,12 @@ $pageTitle = 'Patients Record';
                 Users / Staff
               </span>
             </a>
+
+            <?php endif; ?>
+            
+            <?php
+                    if (strtolower(trim($role)) === 'super admin' || strtolower(trim($role)) === 'administrator'):
+                        ?>
 
             <a href="csmdashboard" class="nav-item">
               <span class="nav-icon">
@@ -102,7 +118,13 @@ $pageTitle = 'Patients Record';
               </span>
             </a>
 
-            <a href="#" class="nav-item">
+            <?php endif; ?>
+            
+            <?php
+            if (strtolower(trim($role)) === 'super admin'):
+                ?>
+
+            <a href="<?= BASE_URL ?>activitylogs" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-clock-rotate-left"></i>
               </span>
@@ -111,6 +133,8 @@ $pageTitle = 'Patients Record';
                 Activity Logs
               </span>
             </a>
+
+            <?php endif; ?>
 
             <a href="#" class="nav-item">
               <span class="nav-icon">
@@ -164,17 +188,12 @@ $pageTitle = 'Patients Record';
 
                 <button class="header-profile" aria-label="Administrator profile">
                   <div class="profile-avatar">
-                    AD
+                    <?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?>
                   </div>
 
                   <div class="profile-details">
-                    <strong>
-                      <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
-                    </strong>
-
-                    <span>
-                      <?= htmlspecialchars($session->get('role') ?? '') ?>
-                    </span>
+                      <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                      <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
                   </div>
 
                   <span class="profile-arrow">

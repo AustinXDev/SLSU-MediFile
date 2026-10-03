@@ -18,11 +18,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const password = document.getElementById("password").value;
 
-    if (username === "test" && password === "test123") {
-      window.location.href = "dashboard";
-      return;
-    }
-
     const validate = validateInput({
       username,
       password,

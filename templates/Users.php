@@ -8,6 +8,17 @@ $session = new SessionManager();
 $middleware = new AdminMiddleware($session);
 $middleware->requireAuth();
 
+$role = trim((string) ($session->get('role') ?? ''));
+if (!in_array($role, ['Super Admin', 'Administrator'], true)) {
+    http_response_code(403);
+    echo 'Access denied.';
+    exit;
+}
+
+$username = (string) ($session->get('admin_username') ?? '');
+$roleName = (string) ($session->get('role') ?? '');
+$initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
+
 $pageTitle = 'User & Staff Accounts';
 ?>
 <!DOCTYPE html>
@@ -37,12 +48,10 @@ $pageTitle = 'User & Staff Accounts';
 
         <div class="admin-profile">
             <div class="admin-avatar">
-                <?= strtoupper(substr(htmlspecialchars($session->get('admin_username') ?? 'A'), 0, 2)) ?>
-            </div>
-
-            <div class="admin-info">
-                <strong><?= htmlspecialchars($session->get('admin_username') ?? '') ?></strong>
-                <span><?= htmlspecialchars($session->get('role') ?? '') ?></span>
+                <?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?></div>
+                <div class="admin-info">
+                <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
                 <small><i></i>Online</small>
             </div>
         </div>
@@ -60,20 +69,38 @@ $pageTitle = 'User & Staff Accounts';
                 <span>Patient Records</span>
             </a>
 
+            <?php
+                if (strtolower(trim($role)) === 'super admin'):
+                    ?>
+
             <a href="users" class="nav-item active" aria-current="page">
                 <span class="nav-icon"><i class="fa-solid fa-user-nurse"></i></span>
                 <span>Users / Staff</span>
             </a>
+
+            <?php endif; ?>
+            
+            <?php
+                    if (strtolower(trim($role)) === 'super admin' || strtolower(trim($role)) === 'administrator'):
+                        ?>
 
             <a href="csmdashboard" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
                 <span>Reports &amp; Analytics</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <?php endif; ?>
+            
+            <?php
+            if (strtolower(trim($role)) === 'super admin'):
+                ?>
+
+            <a href="<?= BASE_URL ?>activitylogs" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
                 <span>Activity Logs</span>
             </a>
+
+            <?php endif; ?>
 
             <a href="#" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
@@ -111,13 +138,10 @@ $pageTitle = 'User & Staff Accounts';
                 </button>
 
                 <button class="header-profile" aria-label="Administrator profile">
-                    <div class="profile-avatar">
-                        <?= strtoupper(substr(htmlspecialchars($session->get('admin_username') ?? 'A'), 0, 2)) ?>
-                    </div>
-
+                    <div class="profile-avatar"><?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?></div>
                     <div class="profile-details">
-                        <strong><?= htmlspecialchars($session->get('admin_username') ?? '') ?></strong>
-                        <span><?= htmlspecialchars($session->get('role') ?? '') ?></span>
+                        <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                        <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
                     </div>
 
                     <span class="profile-arrow"><i class="fa-solid fa-chevron-down"></i></span>

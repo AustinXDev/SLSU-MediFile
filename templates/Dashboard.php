@@ -10,6 +10,12 @@ $middleware = new AdminMiddleware($session);
 
 $middleware->requireAuth();
 
+$role = trim((string) ($session->get('role') ?? ''));
+
+$username = (string) ($session->get('admin_username') ?? '');
+$roleName = (string) ($session->get('role') ?? '');
+$initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
+
 ?>
 
 <!DOCTYPE html>
@@ -54,22 +60,13 @@ $middleware->requireAuth();
         <div class="admin-profile">
 
             <div class="admin-avatar">
-                AD
+                <?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?>
             </div>
 
             <div class="admin-info">
-                <strong>
-                    <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
-                </strong>
-
-                <span>
-                    <?= htmlspecialchars($session->get('role') ?? '') ?>
-                </span>
-
-                <small>
-                    <i></i>
-                    Online
-                </small>
+                <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
+                <small><i></i>Online</small>
             </div>
 
         </div>
@@ -90,20 +87,38 @@ $middleware->requireAuth();
                 <span>Patient Records</span>
             </a>
 
+            <?php
+                if (strtolower(trim($role)) === 'super admin'):
+                    ?>
+
             <a href="users" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-user-nurse"></i></span>
                 <span>Users / Staff</span>
             </a>
+
+            <?php endif; ?>
+
+            <?php
+                    if (strtolower(trim($role)) === 'super admin' || strtolower(trim($role)) === 'administrator'):
+                        ?>
 
             <a href="csmdashboard" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-chart-line"></i></span>
                 <span>Reports & Analytics</span>
             </a>
 
-            <a href="#" class="nav-item">
+            <?php endif; ?>
+
+            <?php
+            if (strtolower(trim($role)) === 'super admin'):
+                ?>
+
+            <a href="<?= BASE_URL ?>activitylogs" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-clock-rotate-left"></i></span>
                 <span>Activity Logs</span>
             </a>
+
+            <?php endif; ?>
 
             <a href="#" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
@@ -176,19 +191,12 @@ $middleware->requireAuth();
                 <!-- Profile -->
                 <button class="header-profile">
 
-                    <div class="profile-avatar">
-                        AD
-                    </div>
+                    <div class="profile-avatar"><?= htmlspecialchars($initials, ENT_QUOTES, 'UTF-8') ?></div>
 
                     <div class="profile-details">
 
-                        <strong>
-                            <?= htmlspecialchars($session->get('admin_username') ?? '') ?>
-                        </strong>
-
-                        <span>
-                            <?= htmlspecialchars($session->get('role') ?? '') ?>
-                        </span>
+                         <strong><?= htmlspecialchars($username, ENT_QUOTES, 'UTF-8') ?></strong>
+                        <span><?= htmlspecialchars($roleName, ENT_QUOTES, 'UTF-8') ?></span>
 
                     </div>
 
@@ -607,9 +615,9 @@ $middleware->requireAuth();
 
                         </div>
 
-                        <button class="view-button">
+                        <a href="<?= BASE_URL ?>activitylogs" class="view-button">
                             View All
-                        </button>
+                        </a>
 
                     </div>
 
