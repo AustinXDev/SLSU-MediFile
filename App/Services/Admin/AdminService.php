@@ -4,12 +4,16 @@ namespace App\Services\Admin;
 
 use App\Models\Admin;
 use App\Repositories\AdminRepository;
+use App\Services\Logs\LogsService;
+use App\Session\SessionManager;
 use RuntimeException;
 
 class AdminService
 {
     public function __construct(
-        private AdminRepository $adminRepository
+        private AdminRepository $adminRepository,
+        private LogsService $log,
+        private SessionManager $session
     ) {
     }
 
@@ -73,6 +77,7 @@ class AdminService
     public function createAccount(array $input): array
     {
         $payload = $this->normalizeCreatePayload($input);
+        $authAdminId = $this->session->get("admin_id");
 
         if ($this->adminRepository->usernameExists($payload['username'])) {
             throw new RuntimeException('Username is already in use.');
@@ -89,6 +94,14 @@ class AdminService
             throw new RuntimeException('Unable to load the created user account.');
         }
 
+        $this->log->record(
+            (int) $authAdminId,
+            ("CREATE"),
+            "Created a new user.",
+            "users",
+            (int) $adminId
+        );
+
         return [
             'status' => 'success',
             'message' => 'User account created successfully.',
@@ -102,6 +115,7 @@ class AdminService
     public function updateAccount(int $id, array $input): array
     {
         $payload = $this->normalizeUpdatePayload($input);
+        $authAdminId = $this->session->get("admin_id");
 
         $existing = $this->adminRepository->findById($id);
         if (!$existing) {
@@ -130,6 +144,14 @@ class AdminService
 
         $account = $this->adminRepository->findById($id);
 
+        $this->log->record(
+            (int) $authAdminId,
+            "UPDATE",
+            "Updated a user record.",
+            "users",
+            (int) $id
+        );
+
         return [
             'status' => 'success',
             'message' => 'User account updated successfully.',
@@ -143,6 +165,8 @@ class AdminService
     public function deleteAccount(int $id): array
     {
         $id = (int) $id;
+        $authAdminId = $this->session->get("admin_id");
+
         if ($id <= 0) {
             throw new RuntimeException('Invalid user account ID.');
         }
@@ -157,10 +181,19 @@ class AdminService
             throw new RuntimeException('Unable to delete user account.');
         }
 
+        $this->log->record(
+            (int) $authAdminId,
+            "DELETE",
+            "Deleted a user record.",
+            "users",
+            $id
+        );
+
         return [
             'status' => 'success',
             'message' => 'User account deleted successfully.',
         ];
+
     }
 
 

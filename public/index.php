@@ -18,6 +18,16 @@ switch($request) {
     require_once __DIR__ . '/../templates/auth/Login.php';
     break;
 
+  case 'forgotpassword':
+    $passwordResetMode = 'request';
+    require_once __DIR__ . '/../templates/auth/PasswordReset.php';
+    break;
+
+  case 'resetpassword':
+    $passwordResetMode = 'reset';
+    require_once __DIR__ . '/../templates/auth/PasswordReset.php';
+    break;
+
   case 'dashboard':
     require_once __DIR__ . '/../templates/Dashboard.php';
     break;

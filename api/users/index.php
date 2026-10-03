@@ -5,7 +5,9 @@ require_once __DIR__ . '/../../config/init.php';
 use App\Controllers\Admin\AdminController;
 use App\Middleware\AdminMiddleware;
 use App\Repositories\AdminRepository;
+use App\Repositories\LogRepositories\LogRepository;
 use App\Services\Admin\AdminService;
+use App\Services\Logs\LogsService;
 use App\Session\SessionManager;
 
 header('Content-Type: application/json; charset=utf-8');
@@ -28,7 +30,7 @@ try {
     require_once __DIR__ . '/../../App/database/database.php';
 
     $repo = new AdminRepository($pdo);
-    $service = new AdminService($repo);
+    $service = new AdminService($repo, new LogsService(new LogRepository($pdo)), $session);
     $controller = new AdminController($service);
 
     $payload = json_decode(file_get_contents('php://input') ?: '[]', true);
