@@ -41,8 +41,6 @@ export const activityEvents = {
         if (url.searchParams.has("logType")) {
           url.searchParams.delete("logType");
 
-          console.log(true);
-
           window.history.replaceState(
             {},
             document.title,

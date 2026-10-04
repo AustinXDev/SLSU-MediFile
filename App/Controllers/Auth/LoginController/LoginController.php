@@ -38,6 +38,11 @@ class LoginController
 
   }
 
+  public function resendOtp(): array
+  {
+    return $this->loginService->resendOtp();
+  }
+
 }
 
 ?>

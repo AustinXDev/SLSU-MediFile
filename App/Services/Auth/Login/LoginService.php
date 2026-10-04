@@ -12,6 +12,7 @@ class LoginService
 {
     private const MAX_ATTEMPTS = 3;
     private const OTP_EXPIRATION_MINUTES = 5;
+    private const OTP_RESEND_COOLDOWN_SECONDS = 60;
 
     public function __construct(
         private AdminRepository $admins,
@@ -182,6 +183,7 @@ class LoginService
             $this->session->remove('admin_2fa_pending');
             $this->session->remove('admin_2fa_id');
             $this->session->remove('admin_2fa_expires_at');
+            $this->session->remove('admin_2fa_last_resend_at');
 
             throw new RuntimeException(
                 'Your verification session has expired. Please log in again.'
@@ -245,6 +247,7 @@ class LoginService
         $this->session->remove('admin_2fa_pending');
         $this->session->remove('admin_2fa_id');
         $this->session->remove('admin_2fa_expires_at');
+        $this->session->remove('admin_2fa_last_resend_at');
 
         /**
          * Record logs
@@ -263,5 +266,56 @@ class LoginService
             'message' => 'Verification successful. Welcome back.',
             'redirect' => 'dashboard'
         ];
+    }
+
+    public function resendOtp(): array
+    {
+        if (
+            empty($this->session->get('admin_2fa_pending')) ||
+            empty($this->session->get('admin_2fa_id'))
+        ) {
+            throw new RuntimeException(
+                'No verification request is pending.'
+            );
+        }
+
+        if (
+            empty($this->session->get('admin_2fa_expires_at')) ||
+            time() > $this->session->get('admin_2fa_expires_at')
+        ) {
+            $this->session->remove('admin_2fa_pending');
+            $this->session->remove('admin_2fa_id');
+            $this->session->remove('admin_2fa_expires_at');
+            $this->session->remove('admin_2fa_last_resend_at');
+
+            throw new RuntimeException(
+                'Your verification session has expired. Please log in again.'
+            );
+        }
+
+        $lastResendAt = (int) $this->session->get('admin_2fa_last_resend_at', 0);
+        if (time() - $lastResendAt < self::OTP_RESEND_COOLDOWN_SECONDS) {
+            throw new RuntimeException(
+                'Please wait before requesting another verification code.',
+                429
+            );
+        }
+
+        $adminId = (int) $this->session->get('admin_2fa_id');
+        $result = $this->twoFactorService->sendCode(
+            $adminId,
+            'Login'
+        );
+
+        $this->session->set('admin_2fa_last_resend_at', time());
+        $this->logService->record(
+            $adminId,
+            'RESEND OTP',
+            'Requested a new OTP verification code during login.',
+            'authentication',
+            $adminId
+        );
+
+        return $result;
     }
 }

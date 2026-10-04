@@ -69,8 +69,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
               try {
                 const verifyResponse = await api.post("auth/verify.php", {
-                  admin_id: loginData.admin_id,
-                  purpose: "login",
                   code,
                 });
 
@@ -96,6 +94,10 @@ window.addEventListener("DOMContentLoaded", () => {
               } finally {
                 verifyingLoginCode = false;
               }
+            },
+
+            onResend: async () => {
+              await api.post("auth/resend-otp.php");
             },
 
             /**

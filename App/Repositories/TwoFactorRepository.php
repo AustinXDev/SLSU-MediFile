@@ -22,7 +22,7 @@ class TwoFactorRepository
     string $codeHash,
     string $purpose,
     string $expiresAt
-  ): bool {
+  ): int|false {
 
     $stmt = $this->pdo->prepare("
       INSERT INTO otp_codes
@@ -35,12 +35,14 @@ class TwoFactorRepository
       VALUES (?, ?, ?, ?)
     ");
 
-    return $stmt->execute([
+    $created = $stmt->execute([
       $adminId,
       $codeHash,
       $purpose,
       $expiresAt
     ]);
+
+    return $created ? (int) $this->pdo->lastInsertId() : false;
 
   }
 
@@ -117,6 +119,19 @@ class TwoFactorRepository
 
   }
 
+  public function invalidateCode(int $otpId): void
+  {
+    $stmt = $this->pdo->prepare("
+      UPDATE otp_codes
+      SET invalidate_at = NOW()
+      WHERE otp_id = ?
+        AND verified_at IS NULL
+        AND invalidate_at IS NULL
+    ");
+
+    $stmt->execute([$otpId]);
+  }
+
 
   public function recordAttempt(
     ?int $otpId,
@@ -178,34 +193,6 @@ class TwoFactorRepository
 
   }
 
-
-  public function hasRecentCode(
-    int $adminId,
-    string $purpose,
-    int $seconds = 60
-  ): bool {
-
-    $stmt = $this->pdo->prepare("
-      SELECT otp_id
-      FROM otp_codes
-      WHERE admin_id = ?
-        AND purpose = ?
-        AND created_at > DATE_SUB(
-          NOW(),
-          INTERVAL ? SECOND
-        )
-      LIMIT 1
-    ");
-
-    $stmt->execute([
-      $adminId,
-      $purpose,
-      $seconds
-    ]);
-
-    return $stmt->fetchColumn() !== false;
-
-  }
 
 }
 

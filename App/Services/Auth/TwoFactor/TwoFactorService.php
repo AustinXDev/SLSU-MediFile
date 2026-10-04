@@ -28,7 +28,7 @@ class TwoFactorService
    */
   public function sendCode(
     int $adminId,
-    string $purpose 
+    string $purpose
   ): array {
 
     $admin = $this->adminRepo->findById($adminId);
@@ -37,16 +37,6 @@ class TwoFactorService
       throw new RuntimeException(
         'Unable to process the verification request.'
       );
-    }
-
-    if ($this->twoFactorRepo->hasRecentCode(
-        $adminId,
-        $purpose,
-        60
-    )) {
-        throw new RuntimeException(
-            'Please wait before requesting another verification code.'
-        );
     }
 
     //Invalidate previous code
@@ -83,20 +73,20 @@ class TwoFactorService
     /**
      * store created code
      */
-    $created = $this->twoFactorRepo->createCode(
+    $otpId = $this->twoFactorRepo->createCode(
       $adminId,
       $codeHash,
       $purpose,
       $expiresAt
     );
 
-    if(!$created){
+    if ($otpId === false) {
       throw new RuntimeException(
         "Unable to generate a verification code."
       );
     }
 
-    $this->mailer->send(
+    $sent = $this->mailer->send(
       $admin->email,
       'SLSU-Health Record Login Verification',
       TwoFactorEmail::build(
@@ -106,6 +96,13 @@ class TwoFactorService
         self::CODE_EXPIRATION_MINUTES
       )
     );
+
+    if (!$sent) {
+      $this->twoFactorRepo->invalidateCode($otpId);
+      throw new RuntimeException(
+        'Unable to send the verification code. Please try again.'
+      );
+    }
 
     return [
       'status'  =>  'success',
