@@ -31,10 +31,24 @@ export const activityEvents = {
 
     dom.get("activitySearch").addEventListener("input", search);
 
+    //implement link
     dom.all("[data-activity-tab]").forEach((tab) => {
       tab.addEventListener("click", () => {
         activityFilters.setView(tab.dataset.activityTab);
         activityData.load();
+        const url = new URL(window.location.href);
+
+        if (url.searchParams.has("logType")) {
+          url.searchParams.delete("logType");
+
+          console.log(true);
+
+          window.history.replaceState(
+            {},
+            document.title,
+            url.pathname + url.search + url.hash,
+          );
+        }
       });
     });
 
@@ -51,10 +65,15 @@ export const activityEvents = {
       this.openDetails(event);
     });
 
-    dom.get("closeActivityModal").addEventListener("click", () => activityModal.close());
-    dom.get("dismissActivityModal").addEventListener("click", () => activityModal.close());
+    dom
+      .get("closeActivityModal")
+      .addEventListener("click", () => activityModal.close());
+    dom
+      .get("dismissActivityModal")
+      .addEventListener("click", () => activityModal.close());
     dom.get("activityModalBackdrop").addEventListener("click", (event) => {
-      if (event.target === dom.get("activityModalBackdrop")) activityModal.close();
+      if (event.target === dom.get("activityModalBackdrop"))
+        activityModal.close();
     });
     document.addEventListener("keydown", (event) => {
       if (event.key === "Escape" && !dom.get("activityModalBackdrop").hidden) {
@@ -69,7 +88,9 @@ export const activityEvents = {
     const dateTo = dom.get("dateTo").value;
 
     if (isCustom && (!dateFrom || !dateTo || dateFrom > dateTo)) {
-      activityData.setError("Choose a valid start and end date for the custom range.");
+      activityData.setError(
+        "Choose a valid start and end date for the custom range.",
+      );
       return;
     }
 
@@ -86,7 +107,9 @@ export const activityEvents = {
     try {
       await activityModal.open(button.dataset.detailsId);
     } catch (error) {
-      activityData.setError(error.message || "Unable to load activity details.");
+      activityData.setError(
+        error.message || "Unable to load activity details.",
+      );
     } finally {
       button.disabled = false;
     }

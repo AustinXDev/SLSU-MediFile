@@ -18,6 +18,9 @@ if (!in_array($role, ['Super Admin', 'Administrator'], true)) {
 $username = (string) ($session->get('admin_username') ?? '');
 $roleName = (string) ($session->get('role') ?? '');
 $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
+
+$logType = trim((string) ($_GET['logType'] ?? ''));
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -282,6 +285,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
     };
     window.APP_API = <?= json_encode(API_URL) ?>;
     window.ACTIVITY_LOGS_PAGE_URL = <?= json_encode(BASE_URL . 'activitylogs') ?>;
+    window.SEARCH_PARAM = <?= json_encode($logType)  ?> 
 </script>
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script type="module" src="<?= BASE_URL ?>assets/js/activity-logs/index.js"></script>

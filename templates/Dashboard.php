@@ -615,7 +615,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
                         </div>
 
-                        <a href="<?= BASE_URL ?>activitylogs" class="view-button">
+                        <a href="<?= BASE_URL ?>activitylogs?logType=logs" class="view-button">
                             View All
                         </a>
 
@@ -663,13 +663,13 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
                         </div>
 
-                        <button
+                        <a  href="<?= BASE_URL ?>activitylogs?logType=patients"
                             type="button"
                             class="view-button"
                             id="viewPatients"
                         >
                             View All
-                        </button>
+                        </a>
 
                     </div>
 

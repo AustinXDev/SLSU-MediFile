@@ -1,6 +1,7 @@
 import { activityData } from "./components/activityData.js";
 import { activityEvents } from "./components/activityEvents.js";
 import { bindLogout } from "../components/logout.js";
+import { activityFilters } from "./components/activityFilters.js";
 
 function openSidebar() {
   document.getElementById("sidebar")?.classList.add("sidebar-open");
@@ -17,6 +18,7 @@ async function init() {
 
   try {
     activityEvents.bind();
+    activityFilters.setView(window.SEARCH_PARAM);
     await activityData.load();
     activityEvents.startRefresh();
   } catch (error) {
