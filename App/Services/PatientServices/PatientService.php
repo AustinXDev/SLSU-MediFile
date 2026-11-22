@@ -140,6 +140,20 @@ class PatientService
                 $this->pdo->beginTransaction();
             }
 
+            //Check for duplicate patient
+            $duplicate = $this->patientRepo->findDuplicate(
+                $basicInfo['studentId'] ?? '',
+                $basicInfo['firstname'],
+                $basicInfo['surname'],
+                $patient_id
+            );
+
+            if ($duplicate !== null) {
+                throw new RuntimeException(
+                    'A patient with the same student ID or name already exists.'
+                );
+            }
+
             //Save or update patient record
             if ($patient_id) {
                 $this->patientRepo->update($patient_id, $basicInfo);

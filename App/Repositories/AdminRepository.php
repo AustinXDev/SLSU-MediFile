@@ -186,6 +186,18 @@ class AdminRepository
             : null;
     }
 
+    public function updateLastLogin(int $adminId): bool
+    {
+        $stmt = $this->pdo->prepare("
+            UPDATE admin
+            SET last_login_at = NOW()
+            WHERE admin_id = ?
+              AND status = 'Active'
+        ");
+
+        return $stmt->execute([$adminId]);
+    }
+
 
     /**
      * Check if the user exist

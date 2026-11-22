@@ -24,4 +24,6 @@ export const dom = {
   confirmModalBackdrop: document.getElementById("confirmModalBackdrop"),
   confirmDeleteButton: document.getElementById("confirmDeleteButton"),
   notification: document.getElementById("appNotification"),
+  passwordInput: document.getElementById("password"),
+  confirmInput: document.getElementById("confirm_password"),
 };

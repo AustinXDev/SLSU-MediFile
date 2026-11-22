@@ -193,6 +193,23 @@ class TwoFactorRepository
 
   }
 
+  public function hasRecentCode(
+    int $adminId,
+    string $purpose,
+    int $seconds = 60
+  ): bool {
+    $stmt = $this->pdo->prepare("
+      SELECT otp_id
+      FROM otp_codes
+      WHERE admin_id = ?
+        AND purpose = ?
+        AND created_at > DATE_SUB(NOW(), INTERVAL ? SECOND)
+      LIMIT 1
+    ");
+    $stmt->execute([$adminId, $purpose, $seconds]);
+
+    return $stmt->fetchColumn() !== false;
+  }
 
 }
 

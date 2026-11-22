@@ -299,31 +299,37 @@ class DashboardRepository
      */
     private function getTodayPatientRecords(): array
     {
-        $stmt = $this->pdo->query("
+        $tz  = new \DateTimeZone('Asia/Manila');
+        $utc = new \DateTimeZone('UTC');
+        $fmt = 'Y-m-d H:i:s';
+
+        $yesterdayStart = (new \DateTime('yesterday', $tz))->setTimezone($utc)->format($fmt);
+        $todayStart     = (new \DateTime('today', $tz))->setTimezone($utc)->format($fmt);
+        $tomorrowStart  = (new \DateTime('tomorrow', $tz))->setTimezone($utc)->format($fmt);
+
+        $stmt = $this->pdo->prepare("
         SELECT
-            SUM(
-                created_at >= CURDATE()
-                AND created_at < DATE_ADD(CURDATE(), INTERVAL 1 DAY)
-            ) AS today,
-
-            SUM(
-                created_at >= DATE_SUB(CURDATE(), INTERVAL 1 DAY)
-                AND created_at < CURDATE()
-            ) AS yesterday
-
-        FROM patients
+            COALESCE(SUM(created_at >= :today_start AND created_at < :tomorrow_start), 0) AS today,
+            COALESCE(SUM(created_at >= :yesterday_start AND created_at < :today_start2), 0) AS yesterday
+        FROM system_logs
+        WHERE created_at >= :range_start AND created_at < :range_end AND action IN ('UPDATE', 'CREATE')
     ");
 
-        $data = $stmt->fetch(PDO::FETCH_ASSOC);
+        $stmt->execute([
+            ':today_start'     => $todayStart,
+            ':tomorrow_start'  => $tomorrowStart,
+            ':yesterday_start' => $yesterdayStart,
+            ':today_start2'    => $todayStart,
+            ':range_start'     => $yesterdayStart,
+            ':range_end'       => $tomorrowStart,
+        ]);
 
-        $today = (int) ($data['today'] ?? 0);
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+
+        $today     = (int) ($data['today'] ?? 0);
         $yesterday = (int) ($data['yesterday'] ?? 0);
 
-        return $this->dashboardHelper->buildKpi(
-            $today,
-            $today,
-            $yesterday
-        );
+        return $this->dashboardHelper->buildKpi($today, $today, $yesterday);
     }
 
 

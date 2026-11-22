@@ -3,10 +3,11 @@
 namespace App\Repositories\EvaluationRepositories;
 
 use PDO;
+use DateTimeImmutable;
 
 class EvaluationRepository
 {
-    protected $pdo;
+    protected PDO $pdo;
 
     public function __construct(PDO $pdo)
     {
@@ -92,7 +93,7 @@ class EvaluationRepository
         return $stmt->execute([
           $data['submission_id'],
           $data['client_type'],
-          $data['transaction_date'],
+          normalizeEvaluationDate($data['transaction_date']),
           $data['sex'],
           $data['age'],
           $data['region'],
@@ -114,4 +115,26 @@ class EvaluationRepository
         ]);
     }
 
+}
+
+function normalizeEvaluationDate(
+    ?string $value
+): ?string {
+    $value = trim((string) $value);
+
+    foreach (['!n/j/Y', '!m/d/Y', '!Y-m-d'] as $format) {
+        $date = DateTimeImmutable::createFromFormat($format, $value);
+        $errors = DateTimeImmutable::getLastErrors();
+
+        if (
+            $date !== false &&
+            ($errors === false ||
+                ($errors['warning_count'] === 0 &&
+                 $errors['error_count'] === 0))
+        ) {
+            return $date->format('Y-m-d');
+        }
+    }
+
+    return null;
 }

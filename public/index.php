@@ -48,6 +48,10 @@ switch($request) {
     require_once __DIR__ . '/../templates/ActivityLogs.php';
     break;
 
+  case 'settings':
+    require_once __DIR__ . '/../templates/Settings.php';
+    break;
+
   default:
     http_response_code(404);
     echo "<h1>404 - Page Not Found</h1>";

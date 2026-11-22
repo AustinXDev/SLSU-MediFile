@@ -1200,6 +1200,66 @@ a {
   white-space: nowrap;
 }
 
+/* Recent patients column sizing */
+.recent-table-wrapper th:nth-child(1) {
+  width: 42%;
+}
+
+.recent-table-wrapper th:nth-child(2) {
+  width: 30%;
+}
+
+.recent-table-wrapper th:nth-child(3) {
+  width: 28%;
+}
+
+/* Recent activity table */
+.recent-activity-table {
+  min-width: 560px;
+  table-layout: fixed;
+}
+
+.recent-activity-table th:nth-child(1) {
+  width: 26%;
+}
+
+.recent-activity-table th:nth-child(2) {
+  width: 36%;
+}
+
+.recent-activity-table th:nth-child(3) {
+  width: 22%;
+}
+
+.recent-activity-table th:nth-child(4) {
+  width: 16%;
+}
+
+.recent-activity-table td {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-activity-table td:nth-child(2) {
+  white-space: normal;
+  word-break: break-word;
+}
+
+@media (max-width: 480px) {
+  .recent-table-wrapper th,
+  .recent-table-wrapper td,
+  .recent-activity-table th,
+  .recent-activity-table td {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .recent-table-wrapper table {
+    min-width: 420px;
+  }
+}
+
 table {
   width: 100%;
 
@@ -1257,10 +1317,20 @@ tbody tr:hover {
 
   gap: 8px;
 
+  min-width: 0;
+  max-width: 100%;
+
   white-space: nowrap;
 }
 
 .user-cell span {
+  flex: 1 1 auto;
+  min-width: 0;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+
   color: #44514b;
 
   font-size: 9px;
@@ -1270,6 +1340,8 @@ tbody tr:hover {
 .user-avatar {
   width: 27px;
   height: 27px;
+  min-width: 27px;
+  flex-shrink: 0;
 
   display: flex;
   align-items: center;

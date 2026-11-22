@@ -225,6 +225,12 @@ class LoginService
             );
         }
 
+        if (!$this->admins->updateLastLogin($adminId)) {
+            throw new RuntimeException(
+                'Unable to update last login information.'
+            );
+        }
+
 
         /**
          * Regenerate session ID
@@ -304,10 +310,17 @@ class LoginService
         $adminId = (int) $this->session->get('admin_2fa_id');
         $result = $this->twoFactorService->sendCode(
             $adminId,
-            'Login'
+            'Login',
+            false
+        );
+
+        $this->session->set(
+            'admin_2fa_expires_at',
+            time() + (self::OTP_EXPIRATION_MINUTES * 60)
         );
 
         $this->session->set('admin_2fa_last_resend_at', time());
+
         $this->logService->record(
             $adminId,
             'RESEND OTP',

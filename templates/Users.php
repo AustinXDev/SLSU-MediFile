@@ -29,6 +29,7 @@ $pageTitle = 'User & Staff Accounts';
     <title>SLSU-MEDIFILE | <?= htmlspecialchars($pageTitle) ?></title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/users.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/autoLogout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -102,7 +103,7 @@ $pageTitle = 'User & Staff Accounts';
 
             <?php endif; ?>
 
-            <a href="#" class="nav-item">
+            <a href="<?= BASE_URL ?>settings" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
                 <span>Settings</span>
             </a>
@@ -288,12 +289,12 @@ $pageTitle = 'User & Staff Accounts';
                     </div>
 
                     <div class="form-grid">
-                        <label class="form-field">
+                        <label class="form-field password-fied">
                             <span>Password</span>
                             <input type="password" name="password" id="password" placeholder="Enter password">
                         </label>
 
-                        <label class="form-field">
+                        <label class="form-field confirm-password-field">
                             <span>Confirm Password</span>
                             <input type="password" name="confirm_password" id="confirm_password" placeholder="Confirm password">
                         </label>
@@ -356,11 +357,13 @@ $pageTitle = 'User & Staff Accounts';
                 <label class="form-field full-width">
                     <span>New Password</span>
                     <input type="password" name="new_password" id="new_password" placeholder="Enter new password">
+                    <i class="fa-solid fa-eye"></i>
                 </label>
 
                 <label class="form-field full-width">
                     <span>Confirm New Password</span>
                     <input type="password" name="confirm_new_password" id="confirm_new_password" placeholder="Confirm new password">
+                    <i class="fa-solid fa-eye"></i>
                 </label>
             </div>
 

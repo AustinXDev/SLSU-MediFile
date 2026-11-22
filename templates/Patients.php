@@ -26,6 +26,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
     <title>SLSU-MEDIFILE | Patients Record</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/patients.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/autoLogout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
@@ -136,7 +137,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
             <?php endif; ?>
 
-            <a href="#" class="nav-item">
+            <a href="<?= BASE_URL ?>settings" class="nav-item">
               <span class="nav-icon">
                 <i class="fa-solid fa-gear"></i>
               </span>
@@ -2011,9 +2012,9 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
               <div class="line-row">
                 <span class="line-label">NAME:</span>
                 <span class="dotted-fill" style="display: flex;">
-                  <span style="flex: 1; text-align: center;" id="documentLastName"></span>
-                  <span style="flex: 1; text-align: center;" id="documentFirstName"></span>
-                  <span style="flex: 1; text-align: center;" id="documentMiddleName"></span>
+                  <span style="flex: 1; text-align: center;" id="documentLastName" class="input-box"></span>
+                  <span style="flex: 1; text-align: center;" id="documentFirstName" class="input-box"></span>
+                  <span style="flex: 1; text-align: center;" id="documentMiddleName" class="input-box"></span>
                 </span>
               </div>
               <div class="sub-labels three-col">
@@ -2024,34 +2025,34 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
               <div class="line-row three-part">
                 <span class="line-label">BIRTHDAY:</span>
-                <span class="dotted-fill short" style="text-align: center;" id="documentBirthday"></span>
-                <span class="line-label mid">AGE:</span>
+                <span class="dotted-fill short input-box" style="text-align: center;" id="documentBirthday"></span>
+                <span class="line-label mid input-box">AGE:</span>
                 <span class="dotted-fill short" style="text-align: center;" id="documentAge"></span>
-                <span class="line-label mid">SEX:</span>
+                <span class="line-label mid input-box">SEX:</span>
                 <span class="dotted-fill short" style="text-align: center;" id="documentSex"></span>
               </div>
 
               <div class="line-row three-part">
                 <span class="line-label">CIVIL STATUS:</span>
-                <span class="dotted-fill short" style="text-align: center;" id="documentCivilStatus"></span>
+                <span class="dotted-fill short input-box" style="text-align: center;" id="documentCivilStatus"></span>
                 <span class="line-label mid">RELIGION:</span>
-                <span class="dotted-fill short" style="text-align: center;" id="documentReligion"></span>
+                <span class="dotted-fill short input-box" style="text-align: center;" id="documentReligion"></span>
                 <span class="line-label mid">NATIONALITY:</span>
-                <span class="dotted-fill short" style="text-align: center;" id="documentNationality"></span>
+                <span class="dotted-fill short input-box" style="text-align: center;" id="documentNationality"></span>
               </div>
 
               <div class="line-row two-part">
                 <span class="line-label">COLLEGE/DEPT.:</span>
-                <span class="dotted-fill short document-value" style="text-align: center;" id="documentDept"></span>
+                <span class="dotted-fill short document-value input-box" style="text-align: center;" id="documentDept"></span>
                 <span class="line-label mid">JOB POSITION/ COURSE:</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentCourse"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentCourse"></span>
               </div>
 
               <div class="line-row two-part">
                 <span class="line-label">HOME ADDRESS:</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentAddress"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentAddress"></span>
                 <span class="line-label mid">TEL. NO.:</span>
-                <span class="dotted-fill short" style="text-align: center;" id="documentTelNo"></span>
+                <span class="dotted-fill short input-box" style="text-align: center;" id="documentTelNo"></span>
               </div>
 
               <div class="emergency-block">
@@ -2059,15 +2060,15 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
                 <div class="emergency-lines">
                   <div class="line-row">
                     <span class="line-label">Mr. /Mrs.</span>
-                    <span class="dotted-fill" style="text-align: center;" id="documentGuardian"></span>
+                    <span class="dotted-fill input-box" style="text-align: center;" id="documentGuardian"></span>
                   </div>
                   <div class="line-row">
                     <span class="line-label">At</span>
-                    <span class="dotted-fill" style="text-align: center;" id="documentGuardianAdrress"></span>
+                    <span class="dotted-fill input-box" style="text-align: center;" id="documentGuardianAdrress"></span>
                   </div>
                   <div class="line-row">
                     <span class="line-label">Tel No.</span>
-                    <span class="dotted-fill" style="text-align: center;" id="documentGuardianTelNo"></span>
+                    <span class="dotted-fill input-box" style="text-align: center;" id="documentGuardianTelNo"></span>
                   </div>
                 </div>
               </div>
@@ -2097,19 +2098,19 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
               <div class="line-row">
                 <span class="line-label">HEAD / NECK :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentHeadNeck"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentHeadNeck"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">RESPIRATORY :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentResp"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentResp"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">CARDIO-VASCULAR :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentCardioVascular"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentCardioVascular"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">GASTRO-INTESTINAL :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentGastroInternal"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentGastroInternal"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">GENITO-URINARY :</span>
@@ -2117,11 +2118,11 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
               </div>
               <div class="line-row">
                 <span class="line-label">EXTREMITIES :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentExtremities"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentExtremities"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">NEUROLOGIC :</span>
-                <span class="dotted-fill" style="text-align: center;" id="documentNeurologic"></span>
+                <span class="dotted-fill input-box" style="text-align: center;" id="documentNeurologic"></span>
               </div>
             </section>
 
@@ -2129,13 +2130,13 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
               <div class="col">
                 <p class="col-heading">DIAGNOSIS / TREATMENT / SUGGESTIONS:</p>
 
-                <div class="paragraph-lines" id="diagnosisText"></div>
+                <div class="paragraph-lines input-box" id="diagnosisText"></div>
               </div>
 
               <div class="col">
                 <p class="col-heading">LABORATORY:</p>
 
-                <div class="paragraph-lines" id="laboratoryText"></div>
+                <div class="paragraph-lines input-box" id="laboratoryText"></div>
               </div>
             </section>
 
@@ -2215,17 +2216,17 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
               <div class="line-row">
                 <span class="line-label">Previous Hospitalization</span>
                 <span class="line-label colon">:</span>
-                <span class="dotted-fill" id="documentPrevHospitalization"></span>
+                <span class="dotted-fill input-box" id="documentPrevHospitalization"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">Previous Operation</span>
                 <span class="line-label colon">:</span>
-                <span class="dotted-fill" id="documentPrevOperation"></span>
+                <span class="dotted-fill input-box" id="documentPrevOperation"></span>
               </div>
               <div class="line-row">
                 <span class="line-label">Previous Trauma</span>
                 <span class="line-label colon">:</span>
-                <span class="dotted-fill" id="documentPrevTrauma"></span>
+                <span class="dotted-fill input-box" id="documentPrevTrauma"></span>
               </div>
 
               <div class="history-of-row">
@@ -2238,7 +2239,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
                 <span class="line-label mid">Alcoholism</span>
                 <span class="paren wide">(&nbsp;<span class="document-social-history" id="Alcoholism"></span>&nbsp;)</span>
                 <span class="line-label mid">Sports:</span>
-                <span class="dotted-fill short" id="documentSportDefinition" style="text-align: center;"></span>
+                <span class="dotted-fill short input-box" id="documentSportDefinition" style="text-align: center;"></span>
               </div>
             </section>
 
@@ -2682,47 +2683,47 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
             <table class="treatment-plan-table">
               <tr>
                 <td class="tp-label">Oral Surgery Clinic</td>
-                <td class="document-treatment-plan" id="oral_surgery"></td>
+                <td class="document-treatment-plan input-box" id="oral_surgery"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Operative Clinic</td>
-                <td class="document-treatment-plan" id="operative"></td>
+                <td class="document-treatment-plan input-box" id="operative"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Prosthodontia Clinic</td>
-                <td class="document-treatment-plan" id="prosthodontia"></td>
+                <td class="document-treatment-plan input-box" id="prosthodontia"></td>
               </tr>
               
               <tr>
                 <td class="tp-label">Crown &amp; Bridge Clinic</td>
-                <td class="document-treatment-plan" id="crown_bridge"></td>
+                <td class="document-treatment-plan input-box" id="crown_bridge"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Oral Medicine Clinic</td>
-                <td class="document-treatment-plan" id="oral_medicine"></td>
+                <td class="document-treatment-plan input-box" id="oral_medicine"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">X-Ray Clinic</td>
-                <td class="document-treatment-plan" id="x_ray"></td>
+                <td class="document-treatment-plan input-box" id="x_ray"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Children's Clinic</td>
-                <td class="document-treatment-plan" id="children"></td>
+                <td class="document-treatment-plan input-box" id="children"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Orthodontia Clinic</td>
-                <td class="document-treatment-plan" id="orthodontia"></td>
+                <td class="document-treatment-plan input-box" id="orthodontia"></td>
               </tr>
 
               <tr>
                 <td class="tp-label">Clinical Laboratory</td>
-                <td class="document-treatment-plan" id="clinical_lab"></td>
+                <td class="document-treatment-plan input-box" id="clinical_lab"></td>
               </tr>
             </table>
 

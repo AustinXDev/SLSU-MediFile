@@ -161,6 +161,8 @@ export const patientForm = {
         try {
           const response = await patientData.save(record);
 
+          console.log(response);
+
           if (response.data?.status === "error") {
             StatusModal.show(
               isEditing ? "Failed to Update" : "Failed to Save",

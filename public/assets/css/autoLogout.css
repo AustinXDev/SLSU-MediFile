@@ -1,0 +1,202 @@
+.auto-logout[hidden] {
+  display: none;
+}
+
+.auto-logout {
+  position: fixed;
+  z-index: 20000;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+}
+
+.auto-logout__backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.58);
+  backdrop-filter: blur(5px);
+  opacity: 0;
+  transition: opacity 180ms ease;
+}
+
+.auto-logout__dialog {
+  position: relative;
+  width: min(100%, 440px);
+  padding: 36px;
+  border: 1px solid rgba(226, 232, 240, 0.9);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: 0 24px 80px rgba(15, 23, 42, 0.24);
+  color: #17201d;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(12px) scale(0.98);
+  transition:
+    opacity 180ms ease,
+    transform 180ms ease;
+}
+
+.auto-logout.is-visible .auto-logout__backdrop {
+  opacity: 1;
+}
+
+.auto-logout.is-visible .auto-logout__dialog {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.auto-logout__icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  margin: 0 auto 18px;
+  place-items: center;
+  border-radius: 16px;
+  background: #fff7ed;
+  color: #c2410c;
+  font-size: 21px;
+}
+
+.auto-logout__dialog h2 {
+  margin: 0;
+  color: #17201d;
+  font-size: 23px;
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+.auto-logout__dialog p {
+  margin: 12px 0 0;
+  color: #64716c;
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.auto-logout__countdown {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 24px;
+  color: #b45309;
+}
+
+.auto-logout__countdown-value {
+  font-variant-numeric: tabular-nums;
+  font-size: 42px;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.auto-logout__countdown-unit {
+  color: #64716c;
+  font-size: 14px;
+}
+
+.auto-logout__dialog .auto-logout__status {
+  min-height: 23px;
+  margin-top: 9px;
+  color: #64716c;
+  font-size: 13px;
+}
+
+.auto-logout__progress {
+  height: 6px;
+  margin-top: 20px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #f1f5f3;
+}
+
+.auto-logout__progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  background: #d97706;
+  transform: scaleX(1);
+  transform-origin: left center;
+  transition: transform 180ms linear;
+}
+
+.auto-logout__actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 26px;
+}
+
+.auto-logout__actions button {
+  min-height: 46px;
+  padding: 0 16px;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition:
+    background-color 140ms ease,
+    border-color 140ms ease,
+    opacity 140ms ease;
+}
+
+.auto-logout__actions button:focus-visible {
+  outline: 3px solid rgba(217, 119, 6, 0.34);
+  outline-offset: 2px;
+}
+
+.auto-logout__actions button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.auto-logout__stay {
+  background: #047857;
+  color: #fff;
+}
+
+.auto-logout__stay:hover:not(:disabled) {
+  background: #065f46;
+}
+
+.auto-logout__signout {
+  border-color: #e2e8f0 !important;
+  background: #fff;
+  color: #33413c;
+}
+
+.auto-logout__signout:hover:not(:disabled) {
+  border-color: #cbd5e1 !important;
+  background: #f8fafc;
+}
+
+@media (max-width: 480px) {
+  .auto-logout {
+    padding: 16px;
+  }
+
+  .auto-logout__dialog {
+    padding: 28px 22px;
+    border-radius: 16px;
+  }
+
+  .auto-logout__dialog h2 {
+    font-size: 21px;
+  }
+
+  .auto-logout__actions {
+    grid-template-columns: 1fr;
+    gap: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .auto-logout__backdrop,
+  .auto-logout__dialog,
+  .auto-logout__actions button,
+  .auto-logout__progress span {
+    transition-duration: 0.01ms;
+  }
+}

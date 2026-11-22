@@ -28,7 +28,8 @@ class TwoFactorService
    */
   public function sendCode(
     int $adminId,
-    string $purpose
+    string $purpose,
+    bool $enforceCooldown = true
   ): array {
 
     $admin = $this->adminRepo->findById($adminId);
@@ -36,6 +37,13 @@ class TwoFactorService
     if(!$admin){
       throw new RuntimeException(
         'Unable to process the verification request.'
+      );
+    }
+
+    if ($enforceCooldown && $this->twoFactorRepo->hasRecentCode($adminId, $purpose, 60)) {
+      throw new RuntimeException(
+        'Please wait before requesting another verification code.',
+        429
       );
     }
 

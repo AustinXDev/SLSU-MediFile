@@ -190,9 +190,7 @@ export const dashboard = {
                 ${escapeHtml(initials)}
               </div>
 
-              <span>
-                ${escapeHtml(username)}
-              </span>
+              <span title="${escapeHtml(username)}">${escapeHtml(username)}</span>
             </div>
           </td>
 
@@ -257,9 +255,7 @@ export const dashboard = {
                 ${escapeHtml(getInitials(fullName))}
               </div>
 
-              <span>
-                ${escapeHtml(fullName || "Unknown Patient")}
-              </span>
+              <span title="${escapeHtml(fullName || "Unknown Patient")}">${escapeHtml(fullName || "Unknown Patient")}</span>
 
             </div>
           </td>

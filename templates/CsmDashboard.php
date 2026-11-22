@@ -23,6 +23,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/patients.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/csm-dashboard.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/autoLogout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 </head>
@@ -82,7 +83,7 @@ $initials = strtoupper(substr($username !== '' ? $username : 'A', 0, 2));
 
             <?php endif; ?>
 
-            <a href="#" class="nav-item">
+            <a href="<?= BASE_URL ?>settings" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span><span>Settings</span>
             </a>
 

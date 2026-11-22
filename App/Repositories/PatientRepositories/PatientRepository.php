@@ -170,6 +170,56 @@ class PatientRepository
     }
 
     /**
+ * Check for duplicate patient records.
+    *
+    * @return array|null
+    */
+    public function findDuplicate(
+        string $student_id,
+        string $firstname,
+        string $surname,
+        ?int $excludePatientId = null
+    ): ?array {
+
+        $sql = "
+            SELECT
+                id,
+                student_id,
+                firstname,
+                surname
+            FROM patients
+            WHERE (
+                student_id = :student_id
+                OR (
+                    LOWER(TRIM(firstname)) = LOWER(TRIM(:firstname))
+                    AND LOWER(TRIM(surname)) = LOWER(TRIM(:surname))
+                )
+            )
+        ";
+
+        $params = [
+            'student_id' => trim($student_id),
+            'firstname' => trim($firstname),
+            'surname' => trim($surname)
+        ];
+
+        // Exclude current patient when updating.
+        if ($excludePatientId !== null) {
+            $sql .= " AND id != :exclude_id";
+            $params['exclude_id'] = $excludePatientId;
+        }
+
+        $sql .= " LIMIT 1";
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        $patient = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $patient ?: null;
+    }
+
+    /**
      * Create a new patient record.
      *
      * @param array $patient

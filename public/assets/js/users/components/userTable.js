@@ -208,8 +208,23 @@ export function openUserModal(mode, account = null) {
   dom.userModalBackdrop.hidden = false;
   dom.userForm.reset();
 
+  if (dom.roleSelect) dom.roleSelect.disabled = mode !== "create";
+  if (dom.statusSelect) {
+    dom.statusSelect.disabled = false;
+    dom.statusSelect.innerHTML =
+      mode === "edit"
+        ? `<option value="">Select status</option>${state.statuses
+            .map(
+              (value) =>
+                `<option value="${escapeHtml(value)}">${escapeHtml(value)}</option>`,
+            )
+            .join("")}`
+        : '<option value="Active">Active</option>';
+  }
   if (dom.roleSelect) dom.roleSelect.value = "";
-  if (dom.statusSelect) dom.statusSelect.value = "";
+  if (dom.statusSelect) {
+    dom.statusSelect.value = mode === "edit" ? "" : "Active";
+  }
   if (dom.passwordSection) dom.passwordSection.hidden = false;
 
   if (dom.saveUserButton) {

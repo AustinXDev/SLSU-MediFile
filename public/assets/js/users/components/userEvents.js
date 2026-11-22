@@ -114,6 +114,10 @@ async function handleUserSubmit(event) {
   const formData = new FormData(dom.userForm);
   const payload = Object.fromEntries(formData.entries());
   const isEditing = Boolean(state.editingId);
+  if (isEditing) {
+    payload.role = dom.roleSelect?.value ?? "";
+    payload.status = dom.statusSelect?.value ?? "";
+  }
   const load = new Loader({
     text: isEditing
       ? "Updating user account..."

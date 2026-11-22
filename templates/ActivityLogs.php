@@ -31,6 +31,7 @@ $logType = trim((string) ($_GET['logType'] ?? ''));
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/dashboard.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/users.css">
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/activity-logs.css">
+    <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/autoLogout.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 </head>
 <body>
@@ -102,7 +103,7 @@ $logType = trim((string) ($_GET['logType'] ?? ''));
 
             <?php endif; ?>
 
-            <a href="#" class="nav-item">
+            <a href="<?= BASE_URL ?>settings" class="nav-item">
                 <span class="nav-icon"><i class="fa-solid fa-gear"></i></span>
                 <span>Settings</span>
             </a>
